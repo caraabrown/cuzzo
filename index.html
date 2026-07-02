@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Acceptance 101 — Planning Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter+Tight:wght@400;500;600;700&family=Archivo+Black&display=swap" rel="stylesheet">
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<style>
+  :root{
+    --bg:#100e1a;
+    --bg-panel:#17141f;
+    --bg-raised:#1e1a2a;
+    --border:#2b2538;
+    --text:#eae5f2;
+    --text-dim:#9a90ac;
+    --text-faint:#5f5871;
+    --emerald:#22a06b;
+    --emerald-dim:#173f30;
+    --sapphire:#3d76c4;
+    --sapphire-dim:#1c3252;
+    --amethyst:#9166c4;
+    --amethyst-dim:#2e2244;
+    --ruby:#c04568;
+    --ruby-dim:#3a1e29;
+    --gold:#cc9f34;
+    --gold-dim:#3a2e14;
+    --radius:10px;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;}
+
+  body{
+    background:
+      radial-gradient(circle at 15% 0%, rgba(145,102,196,0.08), transparent 45%),
+      radial-gradient(circle at 90% 10%, rgba(61,118,196,0.08), transparent 40%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Inter Tight', sans-serif;
+    min-height:100vh;
+    line-height:1.5;
+  }
+
+  h1,h2,h3{
+    font-family:'Oswald', sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.03em;
+    font-weight:600;
+  }
+
+  ::selection{background:var(--amethyst-dim);color:var(--text);}
+
+  a{color:var(--sapphire);}
+
+  header{
+    padding:28px 32px 20px;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    flex-wrap:wrap;
+    gap:16px;
+  }
+
+  header .title-block h1{
+    font-size:28px;
+    color:var(--text);
+  }
+  header .title-block p{
+    color:var(--text-dim);
+    font-size:13px;
+    margin-top:4px;
+    letter-spacing:0.02em;
+  }
+
+  #sync-status{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:12px;
+    color:var(--text-dim);
+    font-family:'Inter Tight',sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+  }
+  #sync-dot{
+    width:8px;height:8px;border-radius:50%;
+    background:var(--gold);
+    transition:background 0.3s;
+  }
+  #sync-dot.live{background:var(--emerald);box-shadow:0 0 8px var(--emerald);}
+  #sync-dot.error{background:var(--ruby);}
+
+  nav{
+    display:flex;
+    gap:2px;
+    padding:0 32px;
+    border-bottom:1px solid var(--border);
+    overflow-x:auto;
+    background:rgba(255,255,255,0.01);
+  }
+  nav button{
+    background:none;
+    border:none;
+    color:var(--text-dim);
+    font-family:'Oswald',sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+    font-size:13px;
+    padding:16px 18px;
+    cursor:pointer;
+    border-bottom:2px solid transparent;
+    white-space:nowrap;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    transition:color 0.15s;
+  }
+  nav button svg{width:15px;height:15px;flex-shrink:0;}
+  nav button:hover{color:var(--text);}
+  nav button.active{color:var(--text);border-bottom-color:var(--amethyst);}
+
+  main{
+    padding:28px 32px 60px;
+    max-width:1100px;
+    margin:0 auto;
+  }
+
+  .panel{display:none;}
+  .panel.active{display:block;animation:fadein 0.25s ease;}
+  @keyframes fadein{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+
+  .panel-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:18px;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+  .panel-head h2{font-size:20px;color:var(--text);}
+  .panel-head p.sub{color:var(--text-dim);font-size:13px;margin-top:2px;text-transform:none;letter-spacing:0;font-family:'Inter Tight',sans-serif;}
+
+  .card{
+    background:var(--bg-panel);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:20px;
+    margin-bottom:16px;
+  }
+
+  label{
+    display:block;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    color:var(--text-dim);
+    margin-bottom:6px;
+    margin-top:14px;
+  }
+  label:first-of-type{margin-top:0;}
+
+  input[type=text], input[type=date], input[type=url], textarea, select{
+    width:100%;
+    background:var(--bg-raised);
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding:10px 12px;
+    color:var(--text);
+    font-family:'Inter Tight',sans-serif;
+    font-size:14px;
+  }
+  input:focus, textarea:focus, select:focus{
+    outline:none;
+    border-color:var(--amethyst);
+  }
+  textarea{resize:vertical;min-height:70px;}
+
+  .row{display:flex;gap:12px;flex-wrap:wrap;}
+  .row > div{flex:1;min-width:180px;}
+
+  button.primary{
+    background:var(--amethyst);
+    color:#fff;
+    border:none;
+    border-radius:6px;
+    padding:10px 20px;
+    font-family:'Oswald',sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+    font-size:13px;
+    cursor:pointer;
+    margin-top:16px;
+    transition:background 0.15s;
+  }
+  button.primary:hover{background:#a37bd4;}
+
+  button.ghost{
+    background:none;
+    border:1px solid var(--border);
+    color:var(--text-dim);
+    border-radius:6px;
+    padding:6px 12px;
+    font-size:12px;
+    cursor:pointer;
+    font-family:'Inter Tight',sans-serif;
+  }
+  button.ghost:hover{color:var(--text);border-color:var(--text-dim);}
+
+  .item{
+    background:var(--bg-panel);
+    border:1px solid var(--border);
+    border-left:3px solid var(--text-faint);
+    border-radius:var(--radius);
+    padding:16px 18px;
+    margin-bottom:10px;
+  }
+  .item.status-yes{border-left-color:var(--emerald);}
+  .item.status-no{border-left-color:var(--ruby);}
+  .item.status-maybe{border-left-color:var(--gold);}
+  .item.status-archive{border-left-color:var(--text-faint);opacity:0.55;}
+  .item.status-new{border-left-color:var(--sapphire);}
+
+  .item-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+  .item-title{font-size:15px;font-weight:600;color:var(--text);}
+  .item-notes{color:var(--text-dim);font-size:13px;margin-top:6px;white-space:pre-wrap;}
+  .item-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+
+  .tag{
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    padding:3px 8px;
+    border-radius:20px;
+    background:var(--bg-raised);
+    color:var(--text-dim);
+    border:1px solid var(--border);
+  }
+  .tag.emerald{color:var(--emerald);border-color:var(--emerald-dim);background:var(--emerald-dim);}
+  .tag.ruby{color:var(--ruby);border-color:var(--ruby-dim);background:var(--ruby-dim);}
+  .tag.gold{color:var(--gold);border-color:var(--gold-dim);background:var(--gold-dim);}
+  .tag.sapphire{color:var(--sapphire);border-color:var(--sapphire-dim);background:var(--sapphire-dim);}
+
+  .inspo-links{margin-top:8px;display:flex;flex-direction:column;gap:4px;}
+  .inspo-links a{font-size:12px;color:var(--sapphire);text-decoration:none;word-break:break-all;}
+  .inspo-links a:hover{text-decoration:underline;}
+
+  .status-select{
+    width:auto;
+    padding:6px 10px;
+    font-size:12px;
+  }
+
+  .del-btn{
+    background:none;border:none;color:var(--text-faint);cursor:pointer;font-size:16px;
+    line-height:1;padding:2px 6px;
+  }
+  .del-btn:hover{color:var(--ruby);}
+
+  .filter-row{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+  .filter-chip{
+    background:var(--bg-panel);
+    border:1px solid var(--border);
+    color:var(--text-dim);
+    padding:6px 14px;
+    border-radius:20px;
+    font-size:12px;
+    cursor:pointer;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+  }
+  .filter-chip.active{background:var(--amethyst-dim);color:var(--text);border-color:var(--amethyst);}
+
+  .empty-state{
+    color:var(--text-faint);
+    font-size:13px;
+    text-align:center;
+    padding:30px 0;
+    font-style:italic;
+  }
+
+  /* icons */
+  .icon{stroke:currentColor;fill:none;stroke-width:1.6;}
+
+  /* footer */
+  footer{
+    border-top:1px solid var(--border);
+    padding:24px 32px;
+    color:var(--text-faint);
+    font-size:12px;
+  }
+  footer .foot-row{
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:8px;
+    max-width:1100px;
+    margin:0 auto;
+  }
+  footer .foot-row:first-child{margin-bottom:10px;color:var(--text-dim);}
+  footer strong{color:var(--text);font-family:'Oswald',sans-serif;letter-spacing:0.04em;}
+
+  textarea#format-doc{min-height:340px;font-size:14px;line-height:1.7;}
+
+  @media(max-width:640px){
+    header, nav, main, footer{padding-left:16px;padding-right:16px;}
+    header{flex-direction:column;align-items:flex-start;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="title-block">
+    <h1>Acceptance 101</h1>
+    <p>Planning Hub — shared by both hosts, updates live</p>
+  </div>
+  <div id="sync-status"><span id="sync-dot"></span><span id="sync-label">Connecting…</span></div>
+</header>
+
+<nav id="tab-nav">
+  <button data-tab="topics" class="active">
+    <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>
+    Topics
+  </button>
+  <button data-tab="ideas">
+    <svg class="icon" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 00-3 11c.5.4 1 1.2 1 2h4c0-.8.5-1.6 1-2a6 6 0 00-3-11z"/></svg>
+    Ideas
+  </button>
+  <button data-tab="episodes">
+    <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M8 5v14M16 5v14"/></svg>
+    Episodes
+  </button>
+  <button data-tab="calendar">
+    <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+    Content Calendar
+  </button>
+  <button data-tab="format">
+    <svg class="icon" viewBox="0 0 24 24"><path d="M5 4h14v16H5z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>
+    Format &amp; Goals
+  </button>
+  <button data-tab="engagement">
+    <svg class="icon" viewBox="0 0 24 24"><path d="M12 21s-7-4.6-9.5-9.1C1 8.6 2.6 5.5 5.8 5c2-.3 3.5.8 4.2 2.2C10.7 5.8 12.2 4.7 14.2 5c3.2.5 4.8 3.6 3.3 6.9C15 16.4 12 21 12 21z"/></svg>
+    Engagement Log
+  </button>
+</nav>
+
+<main>
+
+  <!-- TOPICS -->
+  <section id="panel-topics" class="panel active">
+    <div class="panel-head">
+      <div>
+        <h2>Discussion Topics</h2>
+        <p class="sub">Broad themes the show can pull from. Ideas below can link to one of these.</p>
+      </div>
+    </div>
+    <div class="card">
+      <label>Topic name</label>
+      <input type="text" id="topic-name" placeholder="e.g. Setting boundaries with family">
+      <label>Notes</label>
+      <textarea id="topic-notes" placeholder="Why this matters, angle, anything to remember"></textarea>
+      <button class="primary" onclick="addTopic()">Add Topic</button>
+    </div>
+    <div id="topics-list"></div>
+  </section>
+
+  <!-- IDEAS -->
+  <section id="panel-ideas" class="panel">
+    <div class="panel-head">
+      <div>
+        <h2>Ideas</h2>
+        <p class="sub">Develop, attach inspiration, decide, connect to a topic or episode.</p>
+      </div>
+    </div>
+    <div class="card">
+      <label>Idea title</label>
+      <input type="text" id="idea-title" placeholder="e.g. Millennial guilt segment">
+      <label>Notes</label>
+      <textarea id="idea-notes" placeholder="Where this came from, what it could become"></textarea>
+      <label>Inspiration link(s) — one per line</label>
+      <textarea id="idea-links" placeholder="https://..."></textarea>
+      <div class="row">
+        <div>
+          <label>Link to topic (optional)</label>
+          <select id="idea-topic"><option value="">— none —</option></select>
+        </div>
+        <div>
+          <label>Link to episode (optional)</label>
+          <select id="idea-episode"><option value="">— none —</option></select>
+        </div>
+      </div>
+      <button class="primary" onclick="addIdea()">Add Idea</button>
+    </div>
+    <div class="filter-row" id="idea-filters"></div>
+    <div id="ideas-list"></div>
+  </section>
+
+  <!-- EPISODES -->
+  <section id="panel-episodes" class="panel">
+    <div class="panel-head">
+      <div>
+        <h2>Episodes</h2>
+        <p class="sub">What's actually getting produced, and where it stands.</p>
+      </div>
+    </div>
+    <div class="card">
+      <label>Episode title</label>
+      <input type="text" id="ep-title" placeholder="e.g. Ep 12 — Chosen Family">
+      <div class="row">
+        <div>
+          <label>Planned date</label>
+          <input type="date" id="ep-date">
+        </div>
+        <div>
+          <label>Status</label>
+          <select id="ep-status">
+            <option value="idea">Idea</option>
+            <option value="planned">Planned</option>
+            <option value="recording">Recording</option>
+            <option value="editing">Editing</option>
+            <option value="published">Published</option>
+          </select>
+        </div>
+      </div>
+      <label>Notes</label>
+      <textarea id="ep-notes" placeholder="Outline, talking points, guest info"></textarea>
+      <button class="primary" onclick="addEpisode()">Add Episode</button>
+    </div>
+    <div id="episodes-list"></div>
+  </section>
+
+  <!-- CALENDAR -->
+  <section id="panel-calendar" class="panel">
+    <div class="panel-head">
+      <div>
+        <h2>Content Calendar</h2>
+        <p class="sub">Plan the post, paste the link from Buffer/Metricool/Later once it's drafted there.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="row">
+        <div>
+          <label>Post date</label>
+          <input type="date" id="post-date">
+        </div>
+        <div>
+          <label>Platform</label>
+          <input type="text" id="post-platform" placeholder="Instagram, TikTok, etc.">
+        </div>
+        <div>
+          <label>Status</label>
+          <select id="post-status">
+            <option value="draft">Draft</option>
+            <option value="scheduled">Scheduled</option>
+            <option value="posted">Posted</option>
+          </select>
+        </div>
+      </div>
+      <label>Content / caption</label>
+      <textarea id="post-content" placeholder="Caption, hook, notes"></textarea>
+      <div class="row">
+        <div>
+          <label>Link to episode (optional)</label>
+          <select id="post-episode"><option value="">— none —</option></select>
+        </div>
+        <div>
+          <label>Posting tool link (optional)</label>
+          <input type="url" id="post-tool-link" placeholder="Buffer/Metricool draft URL">
+        </div>
+      </div>
+      <button class="primary" onclick="addPost()">Add Post</button>
+    </div>
+    <div id="calendar-list"></div>
+  </section>
+
+  <!-- FORMAT & GOALS -->
+  <section id="panel-format" class="panel">
+    <div class="panel-head">
+      <div>
+        <h2>Format &amp; Goals</h2>
+        <p class="sub">One shared doc. Saves automatically a couple seconds after you stop typing.</p>
+      </div>
+      <span id="format-save-status" class="tag">Saved</span>
+    </div>
+    <div class="card">
+      <textarea id="format-doc" placeholder="Show mission, format structure, episode length, tone, target audience, goals for the season..."></textarea>
+    </div>
+  </section>
+
+  <!-- ENGAGEMENT -->
+  <section id="panel-engagement" class="panel">
+    <div class="panel-head">
+      <div>
+        <h2>Engagement Log</h2>
+        <p class="sub">Track social activity and in-person moments — comments, DMs, meetups, events.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="row">
+        <div>
+          <label>Date</label>
+          <input type="date" id="eng-date">
+        </div>
+        <div>
+          <label>Type</label>
+          <select id="eng-type">
+            <option value="social">Social</option>
+            <option value="inperson">In-Person</option>
+          </select>
+        </div>
+        <div>
+          <label>Platform / venue</label>
+          <input type="text" id="eng-platform" placeholder="Instagram, a live event name...">
+        </div>
+      </div>
+      <label>What happened</label>
+      <textarea id="eng-desc" placeholder="Description, numbers, who to follow up with"></textarea>
+      <button class="primary" onclick="addEngagement()">Log Entry</button>
+    </div>
+    <div id="engagement-list"></div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="foot-row">
+    <strong>Acceptance 101 — Planning Hub</strong>
+    <span id="footer-sync">—</span>
+  </div>
+  <div class="foot-row">
+    <span>Private planning tool — not indexed, no login required</span>
+    <span>Built by Claude for Cara &amp; her cousin</span>
+  </div>
+</footer>
+
+<script>
+// ============ FIREBASE CONFIG ============
+// Replace the 6 values below with the ones from your Firebase project settings.
+// This apiKey is safe to be public — Firebase access is controlled by the
+// Firestore security rules you set in the console, not by hiding this key.
+const firebaseConfig = {
+  apiKey: "AIzaSyBmK2AUBlUZl1tSgyYdYjHT5qj8Lefq0ZI",
+  authDomain: "cuzzo-4ccc4.firebaseapp.com",
+  projectId: "cuzzo-4ccc4",
+  storageBucket: "cuzzo-4ccc4.firebasestorage.app",
+  messagingSenderId: "649230401633",
+  appId: "1:649230401633:web:7e3daf20db2fd7e6f9ea20"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+const syncDot = document.getElementById('sync-dot');
+const syncLabel = document.getElementById('sync-label');
+const footerSync = document.getElementById('footer-sync');
+
+function setSync(state, label){
+  syncDot.className = state;
+  syncLabel.textContent = label;
+  footerSync.textContent = label === 'Live' ? 'Synced just now' : label;
+}
+
+db.collection('_health').doc('ping').set({t: Date.now()})
+  .then(()=> setSync('live','Live'))
+  .catch((err)=>{
+    setSync('error','Connection error');
+    console.error('Firestore connection failed:', err);
+  });
+
+// ============ TAB NAV ============
+document.querySelectorAll('#tab-nav button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#tab-nav button').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+  });
+});
+
+function escapeHtml(str){
+  if(!str) return '';
+  return str.replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+function linkify(urls){
+  return urls.filter(Boolean).map(u=>{
+    const safe = escapeHtml(u.trim());
+    return `<a href="${safe}" target="_blank" rel="noopener">${safe}</a>`;
+  }).join('');
+}
+
+// ============ TOPICS ============
+let topicsCache = [];
+
+function addTopic(){
+  const name = document.getElementById('topic-name').value.trim();
+  if(!name) return;
+  const notes = document.getElementById('topic-notes').value.trim();
+  db.collection('topics').add({name, notes, createdAt: Date.now()});
+  document.getElementById('topic-name').value = '';
+  document.getElementById('topic-notes').value = '';
+}
+
+function deleteDoc(collection, id){
+  if(!confirm('Delete this? This can\'t be undone.')) return;
+  db.collection(collection).doc(id).delete();
+}
+
+db.collection('topics').orderBy('createdAt','desc').onSnapshot(snap=>{
+  topicsCache = [];
+  const list = document.getElementById('topics-list');
+  if(snap.empty){ list.innerHTML = '<div class="empty-state">No topics yet — add one above.</div>'; }
+  else { list.innerHTML = ''; }
+  snap.forEach(doc=>{
+    const d = doc.data();
+    topicsCache.push({id: doc.id, name: d.name});
+    const el = document.createElement('div');
+    el.className = 'item';
+    el.innerHTML = `
+      <div class="item-top">
+        <div>
+          <div class="item-title">${escapeHtml(d.name)}</div>
+          ${d.notes ? `<div class="item-notes">${escapeHtml(d.notes)}</div>` : ''}
+        </div>
+        <button class="del-btn" onclick="deleteDoc('topics','${doc.id}')">&times;</button>
+      </div>`;
+    list.appendChild(el);
+  });
+  refreshTopicDropdowns();
+});
+
+function refreshTopicDropdowns(){
+  const sel = document.getElementById('idea-topic');
+  const current = sel.value;
+  sel.innerHTML = '<option value="">— none —</option>' +
+    topicsCache.map(t=>`<option value="${t.id}">${escapeHtml(t.name)}</option>`).join('');
+  sel.value = current;
+}
+
+// ============ IDEAS ============
+let episodesCache = [];
+let currentIdeaFilter = 'all';
+const STATUS_LABELS = {new:'New', yes:'Yes', no:'No', maybe:'Maybe Later', archive:'Archived'};
+const STATUS_TAGCLASS = {new:'sapphire', yes:'emerald', no:'ruby', maybe:'gold', archive:''};
+
+const filterRow = document.getElementById('idea-filters');
+['all','new','yes','no','maybe','archive'].forEach(s=>{
+  const chip = document.createElement('button');
+  chip.className = 'filter-chip' + (s==='all' ? ' active' : '');
+  chip.textContent = s==='all' ? 'All' : STATUS_LABELS[s];
+  chip.onclick = ()=>{
+    currentIdeaFilter = s;
+    document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    renderIdeas();
+  };
+  filterRow.appendChild(chip);
+});
+
+function addIdea(){
+  const title = document.getElementById('idea-title').value.trim();
+  if(!title) return;
+  const notes = document.getElementById('idea-notes').value.trim();
+  const links = document.getElementById('idea-links').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  const topicId = document.getElementById('idea-topic').value;
+  const episodeId = document.getElementById('idea-episode').value;
+  db.collection('ideas').add({title, notes, links, status:'new', topicId, episodeId, createdAt: Date.now()});
+  document.getElementById('idea-title').value = '';
+  document.getElementById('idea-notes').value = '';
+  document.getElementById('idea-links').value = '';
+}
+
+function setIdeaStatus(id, status){
+  db.collection('ideas').doc(id).update({status});
+}
+
+let ideasCache = [];
+db.collection('ideas').orderBy('createdAt','desc').onSnapshot(snap=>{
+  ideasCache = [];
+  snap.forEach(doc=> ideasCache.push({id: doc.id, ...doc.data()}));
+  renderIdeas();
+});
+
+function renderIdeas(){
+  const list = document.getElementById('ideas-list');
+  const filtered = currentIdeaFilter==='all' ? ideasCache : ideasCache.filter(i=>i.status===currentIdeaFilter);
+  if(filtered.length===0){ list.innerHTML = '<div class="empty-state">No ideas here yet.</div>'; return; }
+  list.innerHTML = '';
+  filtered.forEach(d=>{
+    const topic = topicsCache.find(t=>t.id===d.topicId);
+    const episode = episodesCache.find(e=>e.id===d.episodeId);
+    const el = document.createElement('div');
+    el.className = 'item status-' + (d.status||'new');
+    el.innerHTML = `
+      <div class="item-top">
+        <div style="flex:1">
+          <div class="item-title">${escapeHtml(d.title)}</div>
+          ${d.notes ? `<div class="item-notes">${escapeHtml(d.notes)}</div>` : ''}
+          ${d.links && d.links.length ? `<div class="inspo-links">${linkify(d.links)}</div>` : ''}
+          <div class="item-meta">
+            ${topic ? `<span class="tag sapphire">${escapeHtml(topic.name)}</span>` : ''}
+            ${episode ? `<span class="tag gold">${escapeHtml(episode.title)}</span>` : ''}
+          </div>
+        </div>
+        <button class="del-btn" onclick="deleteDoc('ideas','${d.id}')">&times;</button>
+      </div>
+      <select class="status-select" style="margin-top:12px" onchange="setIdeaStatus('${d.id}', this.value)">
+        ${Object.entries(STATUS_LABELS).map(([k,v])=>`<option value="${k}" ${d.status===k?'selected':''}>${v}</option>`).join('')}
+      </select>`;
+    list.appendChild(el);
+  });
+}
+
+// ============ EPISODES ============
+function addEpisode(){
+  const title = document.getElementById('ep-title').value.trim();
+  if(!title) return;
+  const date = document.getElementById('ep-date').value;
+  const status = document.getElementById('ep-status').value;
+  const notes = document.getElementById('ep-notes').value.trim();
+  db.collection('episodes').add({title, date, status, notes, createdAt: Date.now()});
+  document.getElementById('ep-title').value = '';
+  document.getElementById('ep-date').value = '';
+  document.getElementById('ep-notes').value = '';
+}
+
+function setEpisodeStatus(id, status){
+  db.collection('episodes').doc(id).update({status});
+}
+
+const EP_STATUS_CLASS = {idea:'sapphire', planned:'gold', recording:'ruby', editing:'gold', published:'emerald'};
+
+db.collection('episodes').orderBy('createdAt','desc').onSnapshot(snap=>{
+  episodesCache = [];
+  const list = document.getElementById('episodes-list');
+  if(snap.empty){ list.innerHTML = '<div class="empty-state">No episodes yet — add one above.</div>'; }
+  else { list.innerHTML = ''; }
+  snap.forEach(doc=>{
+    const d = doc.data();
+    episodesCache.push({id: doc.id, title: d.title});
+    const linkedIdeas = ideasCache.filter(i=>i.episodeId===doc.id);
+    const el = document.createElement('div');
+    el.className = 'item';
+    el.innerHTML = `
+      <div class="item-top">
+        <div style="flex:1">
+          <div class="item-title">${escapeHtml(d.title)}</div>
+          <div class="item-meta">
+            <span class="tag ${EP_STATUS_CLASS[d.status]||''}">${escapeHtml(d.status||'idea')}</span>
+            ${d.date ? `<span class="tag">${escapeHtml(d.date)}</span>` : ''}
+          </div>
+          ${d.notes ? `<div class="item-notes">${escapeHtml(d.notes)}</div>` : ''}
+          ${linkedIdeas.length ? `<div class="item-notes">Linked ideas: ${linkedIdeas.map(i=>escapeHtml(i.title)).join(', ')}</div>` : ''}
+        </div>
+        <button class="del-btn" onclick="deleteDoc('episodes','${doc.id}')">&times;</button>
+      </div>
+      <select class="status-select" style="margin-top:12px" onchange="setEpisodeStatus('${doc.id}', this.value)">
+        <option value="idea" ${d.status==='idea'?'selected':''}>Idea</option>
+        <option value="planned" ${d.status==='planned'?'selected':''}>Planned</option>
+        <option value="recording" ${d.status==='recording'?'selected':''}>Recording</option>
+        <option value="editing" ${d.status==='editing'?'selected':''}>Editing</option>
+        <option value="published" ${d.status==='published'?'selected':''}>Published</option>
+      </select>`;
+    list.appendChild(el);
+  });
+  refreshEpisodeDropdowns();
+  renderIdeas();
+});
+
+function refreshEpisodeDropdowns(){
+  ['idea-episode','post-episode'].forEach(id=>{
+    const sel = document.getElementById(id);
+    const current = sel.value;
+    sel.innerHTML = '<option value="">— none —</option>' +
+      episodesCache.map(e=>`<option value="${e.id}">${escapeHtml(e.title)}</option>`).join('');
+    sel.value = current;
+  });
+}
+
+// ============ CALENDAR / POSTS ============
+function addPost(){
+  const content = document.getElementById('post-content').value.trim();
+  if(!content) return;
+  const date = document.getElementById('post-date').value;
+  const platform = document.getElementById('post-platform').value.trim();
+  const status = document.getElementById('post-status').value;
+  const episodeId = document.getElementById('post-episode').value;
+  const toolLink = document.getElementById('post-tool-link').value.trim();
+  db.collection('posts').add({content, date, platform, status, episodeId, toolLink, createdAt: Date.now()});
+  document.getElementById('post-content').value = '';
+  document.getElementById('post-platform').value = '';
+  document.getElementById('post-tool-link').value = '';
+}
+
+function setPostStatus(id, status){
+  db.collection('posts').doc(id).update({status});
+}
+
+const POST_STATUS_CLASS = {draft:'sapphire', scheduled:'gold', posted:'emerald'};
+
+db.collection('posts').orderBy('date','asc').onSnapshot(snap=>{
+  const list = document.getElementById('calendar-list');
+  if(snap.empty){ list.innerHTML = '<div class="empty-state">Nothing scheduled yet — add a post above.</div>'; return; }
+  list.innerHTML = '';
+  snap.forEach(doc=>{
+    const d = doc.data();
+    const episode = episodesCache.find(e=>e.id===d.episodeId);
+    const el = document.createElement('div');
+    el.className = 'item';
+    el.innerHTML = `
+      <div class="item-top">
+        <div style="flex:1">
+          <div class="item-meta" style="margin-top:0;margin-bottom:8px;">
+            ${d.date ? `<span class="tag">${escapeHtml(d.date)}</span>` : ''}
+            ${d.platform ? `<span class="tag sapphire">${escapeHtml(d.platform)}</span>` : ''}
+            <span class="tag ${POST_STATUS_CLASS[d.status]||''}">${escapeHtml(d.status)}</span>
+          </div>
+          <div class="item-notes">${escapeHtml(d.content)}</div>
+          ${episode ? `<div class="item-meta"><span class="tag gold">${escapeHtml(episode.title)}</span></div>` : ''}
+          ${d.toolLink ? `<div class="inspo-links"><a href="${escapeHtml(d.toolLink)}" target="_blank" rel="noopener">Open in posting tool →</a></div>` : ''}
+        </div>
+        <button class="del-btn" onclick="deleteDoc('posts','${doc.id}')">&times;</button>
+      </div>
+      <select class="status-select" style="margin-top:12px" onchange="setPostStatus('${doc.id}', this.value)">
+        <option value="draft" ${d.status==='draft'?'selected':''}>Draft</option>
+        <option value="scheduled" ${d.status==='scheduled'?'selected':''}>Scheduled</option>
+        <option value="posted" ${d.status==='posted'?'selected':''}>Posted</option>
+      </select>`;
+    list.appendChild(el);
+  });
+});
+
+// ============ FORMAT & GOALS ============
+const formatDoc = document.getElementById('format-doc');
+const formatStatus = document.getElementById('format-save-status');
+let formatSaveTimer = null;
+let formatLoadedOnce = false;
+
+db.collection('meta').doc('formatGoals').onSnapshot(doc=>{
+  if(doc.exists && document.activeElement !== formatDoc){
+    formatDoc.value = doc.data().content || '';
+  }
+  formatLoadedOnce = true;
+});
+
+formatDoc.addEventListener('input', ()=>{
+  formatStatus.textContent = 'Saving…';
+  formatStatus.className = 'tag gold';
+  clearTimeout(formatSaveTimer);
+  formatSaveTimer = setTimeout(()=>{
+    db.collection('meta').doc('formatGoals').set({content: formatDoc.value, updatedAt: Date.now()})
+      .then(()=>{ formatStatus.textContent = 'Saved'; formatStatus.className = 'tag emerald'; })
+      .catch(()=>{ formatStatus.textContent = 'Save failed — check connection'; formatStatus.className = 'tag ruby'; });
+  }, 900);
+});
+
+// ============ ENGAGEMENT LOG ============
+function addEngagement(){
+  const desc = document.getElementById('eng-desc').value.trim();
+  if(!desc) return;
+  const date = document.getElementById('eng-date').value;
+  const type = document.getElementById('eng-type').value;
+  const platform = document.getElementById('eng-platform').value.trim();
+  db.collection('engagements').add({desc, date, type, platform, createdAt: Date.now()});
+  document.getElementById('eng-desc').value = '';
+  document.getElementById('eng-platform').value = '';
+}
+
+db.collection('engagements').orderBy('date','desc').onSnapshot(snap=>{
+  const list = document.getElementById('engagement-list');
+  if(snap.empty){ list.innerHTML = '<div class="empty-state">No entries yet — log one above.</div>'; return; }
+  list.innerHTML = '';
+  snap.forEach(doc=>{
+    const d = doc.data();
+    const el = document.createElement('div');
+    el.className = 'item';
+    el.innerHTML = `
+      <div class="item-top">
+        <div style="flex:1">
+          <div class="item-meta" style="margin-top:0;margin-bottom:8px;">
+            ${d.date ? `<span class="tag">${escapeHtml(d.date)}</span>` : ''}
+            <span class="tag ${d.type==='social'?'sapphire':'gold'}">${d.type==='social'?'Social':'In-Person'}</span>
+            ${d.platform ? `<span class="tag">${escapeHtml(d.platform)}</span>` : ''}
+          </div>
+          <div class="item-notes">${escapeHtml(d.desc)}</div>
+        </div>
+        <button class="del-btn" onclick="deleteDoc('engagements','${doc.id}')">&times;</button>
+      </div>`;
+    list.appendChild(el);
+  });
+});
+</script>
+</body>
+</html>
