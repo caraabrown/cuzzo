@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Acceptance 101 — Planning Hub</title>
+<title>Cuzzo — Planning Hub</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter+Tight:wght@400;500;600;700&family=Archivo+Black&display=swap" rel="stylesheet">
 
@@ -12,23 +12,23 @@
 
 <style>
   :root{
-    --bg:#100e1a;
-    --bg-panel:#17141f;
-    --bg-raised:#1e1a2a;
-    --border:#2b2538;
-    --text:#eae5f2;
-    --text-dim:#9a90ac;
-    --text-faint:#5f5871;
-    --emerald:#22a06b;
-    --emerald-dim:#173f30;
-    --sapphire:#3d76c4;
-    --sapphire-dim:#1c3252;
-    --amethyst:#9166c4;
-    --amethyst-dim:#2e2244;
-    --ruby:#c04568;
-    --ruby-dim:#3a1e29;
-    --gold:#cc9f34;
-    --gold-dim:#3a2e14;
+    --bg:#0a0a0b;
+    --bg-panel:#101413;
+    --bg-raised:#161c1b;
+    --border:#232b2a;
+    --text:#f5f5f2;
+    --text-dim:#9aa5a3;
+    --text-faint:#5a6462;
+    --emerald:#12b5ac;
+    --emerald-dim:#0d2e2c;
+    --sapphire:#2dd4c4;
+    --sapphire-dim:#0f3230;
+    --amethyst:#12b5ac;
+    --amethyst-dim:#0d2e2c;
+    --ruby:#ed1c24;
+    --ruby-dim:#3a0c0e;
+    --gold:#f2555a;
+    --gold-dim:#3d1418;
     --radius:10px;
   }
 
@@ -36,8 +36,8 @@
 
   body{
     background:
-      radial-gradient(circle at 15% 0%, rgba(145,102,196,0.08), transparent 45%),
-      radial-gradient(circle at 90% 10%, rgba(61,118,196,0.08), transparent 40%),
+      radial-gradient(circle at 15% 0%, rgba(18,181,172,0.08), transparent 45%),
+      radial-gradient(circle at 90% 10%, rgba(45,212,196,0.06), transparent 40%),
       var(--bg);
     color:var(--text);
     font-family:'Inter Tight', sans-serif;
@@ -68,7 +68,7 @@
 
   header .title-block h1{
     font-size:28px;
-    color:var(--text);
+    color:var(--ruby);
   }
   header .title-block p{
     color:var(--text-dim);
@@ -122,7 +122,7 @@
   }
   nav button svg{width:15px;height:15px;flex-shrink:0;}
   nav button:hover{color:var(--text);}
-  nav button.active{color:var(--text);border-bottom-color:var(--amethyst);}
+  nav button.active{color:var(--text);border-bottom-color:var(--ruby);}
 
   main{
     padding:28px 32px 60px;
@@ -197,7 +197,7 @@
     margin-top:16px;
     transition:background 0.15s;
   }
-  button.primary:hover{background:#a37bd4;}
+  button.primary:hover{background:#1ed8cd;}
 
   button.ghost{
     background:none;
@@ -310,22 +310,89 @@
     header, nav, main, footer{padding-left:16px;padding-right:16px;}
     header{flex-direction:column;align-items:flex-start;}
   }
+  .home-section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+  .inline-form{margin-bottom:16px;}
+
+  .quote-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;}
+  .quote-card{background:var(--bg-raised);border:1px solid var(--border);border-radius:var(--radius);padding:16px;position:relative;}
+  .quote-text{font-size:14px;font-style:italic;color:var(--text);line-height:1.5;}
+  .quote-author{font-size:12px;color:var(--text-dim);margin-top:8px;}
+  .quote-card .del-btn{position:absolute;top:6px;right:6px;}
+
+  .timeline-line{position:relative;padding-left:22px;border-left:2px solid var(--border);}
+  .timeline-point{position:relative;margin-bottom:20px;padding-left:14px;}
+  .timeline-point:last-child{margin-bottom:0;}
+  .timeline-dot{position:absolute;left:-29px;top:3px;width:10px;height:10px;border-radius:50%;background:var(--ruby);border:2px solid var(--bg);}
+  .timeline-content{position:relative;padding-right:24px;}
+  .timeline-content .del-btn{position:absolute;top:-2px;right:0;}
+
+  .tile-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;}
+  .format-tile{background:var(--bg-raised);border:1px solid var(--border);border-radius:var(--radius);padding:14px;}
+  .tile-label{font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-dim);margin-bottom:6px;}
+  .tile-value{font-size:14px;color:var(--text);cursor:pointer;min-height:20px;}
+  .tile-value:hover{color:var(--ruby);}
+
+  .topic-pool{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;min-height:44px;padding:12px;background:var(--bg-panel);border:1px dashed var(--border);border-radius:var(--radius);}
+  .topic-tile{background:var(--sapphire-dim);color:var(--sapphire);border:1px solid var(--sapphire);padding:6px 12px;border-radius:20px;font-size:12px;cursor:grab;}
+
+  .kanban{display:flex;gap:14px;overflow-x:auto;padding-bottom:14px;}
+  .kanban-col{flex:0 0 240px;background:var(--bg-panel);border:1px solid var(--border);border-radius:var(--radius);padding:12px;min-height:160px;transition:border-color 0.15s;}
+  .kanban-col.dragover{border-color:var(--ruby);}
+  .kanban-col h4{font-size:12px;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-dim);margin-bottom:10px;}
+  .episode-card{background:var(--bg-raised);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:8px;cursor:grab;transition:border-color 0.15s;position:relative;}
+  .episode-card.dragover{border-color:var(--ruby);}
+  .episode-card .ep-title{font-size:13px;font-weight:600;padding-right:16px;}
+  .episode-card .ep-topics{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
+  .episode-card .del-btn{position:absolute;top:6px;right:6px;font-size:14px;}
+
+  .clip-block{margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+  .clip-row{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;}
+  .clip-row:last-child{border-bottom:none;}
+
+  .view-toggle{display:flex;gap:6px;}
+  .view-toggle button.active{color:var(--text);border-color:var(--ruby);}
+  .cal-nav{display:flex;justify-content:space-between;align-items:center;margin:20px 0 10px;}
+  .cal-nav h3{font-size:15px;}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
+  .cal-daylabel{font-size:10px;text-transform:uppercase;color:var(--text-faint);text-align:center;padding-bottom:4px;}
+  .cal-day{background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;min-height:78px;padding:6px;font-size:11px;}
+  .cal-day.empty{background:none;border:none;}
+  .cal-day .daynum{color:var(--text-faint);margin-bottom:4px;}
+  .cal-chip{display:block;background:var(--amethyst-dim);color:var(--text);border-radius:4px;padding:2px 5px;margin-bottom:3px;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .cal-chip.ruby{background:var(--ruby-dim);}
+  .cal-chip.emerald{background:var(--emerald-dim);}
+
+  .dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-top:16px;}
+  .dash-stat{background:var(--bg-panel);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;}
+  .dash-stat .num{font-family:'Archivo Black',sans-serif;font-size:26px;color:var(--ruby);}
+  .dash-stat .lbl{font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-dim);margin-top:4px;}
+  .copy-row{display:flex;gap:6px;margin-top:2px;}
+  .copy-row input{flex:1;}
+  .copy-row button{flex-shrink:0;}
 </style>
 </head>
 <body>
 
 <header>
   <div class="title-block">
-    <h1>Acceptance 101</h1>
-    <p>Planning Hub — shared by both hosts, updates live</p>
+    <h1>Cuzzo</h1>
+    <p>Planning Hub</p>
   </div>
   <div id="sync-status"><span id="sync-dot"></span><span id="sync-label">Connecting…</span></div>
 </header>
 
 <nav id="tab-nav">
-  <button data-tab="topics" class="active">
+  <button data-tab="home" class="active">
+    <svg class="icon" viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9a1 1 0 01-1 1h-4v-6H9v6H5a1 1 0 01-1-1z"/></svg>
+    Home
+  </button>
+  <button data-tab="todo">
+    <svg class="icon" viewBox="0 0 24 24"><path d="M9 11l2 2 4-4"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+    To Do
+  </button>
+  <button data-tab="topics">
     <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>
-    Topics
+    Topic Development
   </button>
   <button data-tab="ideas">
     <svg class="icon" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 00-3 11c.5.4 1 1.2 1 2h4c0-.8.5-1.6 1-2a6 6 0 00-3-11z"/></svg>
@@ -335,32 +402,154 @@
     <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M8 5v14M16 5v14"/></svg>
     Episodes
   </button>
+  <button data-tab="mediabank">
+    <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v5"/><circle cx="8" cy="14" r="1.5"/><path d="M8 15.5l3-2.5 4 3 3-2"/></svg>
+    Media Bank
+  </button>
   <button data-tab="calendar">
     <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
     Content Calendar
   </button>
-  <button data-tab="format">
-    <svg class="icon" viewBox="0 0 24 24"><path d="M5 4h14v16H5z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>
-    Format &amp; Goals
+  <button data-tab="performance">
+    <svg class="icon" viewBox="0 0 24 24"><path d="M4 20V10M11 20V4M18 20v-7"/></svg>
+    Media Performance
   </button>
   <button data-tab="engagement">
     <svg class="icon" viewBox="0 0 24 24"><path d="M12 21s-7-4.6-9.5-9.1C1 8.6 2.6 5.5 5.8 5c2-.3 3.5.8 4.2 2.2C10.7 5.8 12.2 4.7 14.2 5c3.2.5 4.8 3.6 3.3 6.9C15 16.4 12 21 12 21z"/></svg>
     Engagement Log
   </button>
+  <button data-tab="accounts">
+    <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+    Account Directory
+  </button>
 </nav>
 
 <main>
 
-  <!-- TOPICS -->
-  <section id="panel-topics" class="panel active">
+  <!-- HOME -->
+  <section id="panel-home" class="panel active">
+
+    <div class="card">
+      <div class="home-section-head">
+        <h3>Inspiration</h3>
+        <button class="ghost" onclick="toggleAddForm('quote-form')">+ Add Quote</button>
+      </div>
+      <div id="quote-form" class="inline-form" style="display:none">
+        <label>Quote</label>
+        <textarea id="quote-text" placeholder="The quote itself"></textarea>
+        <label>Attribution (optional)</label>
+        <input type="text" id="quote-author" placeholder="Who said it">
+        <button class="primary" onclick="addQuote()">Save Quote</button>
+      </div>
+      <div id="quotes-list" class="quote-grid"></div>
+    </div>
+
+    <div class="card">
+      <div class="home-section-head">
+        <h3>Goals</h3>
+        <button class="ghost" onclick="toggleAddForm('goal-form')">+ Add Goal</button>
+      </div>
+      <div id="goal-form" class="inline-form" style="display:none">
+        <label>Goal</label>
+        <input type="text" id="goal-text" placeholder="e.g. 500 downloads by episode 10">
+        <button class="primary" onclick="addGoal()">Save Goal</button>
+      </div>
+      <div id="goals-list"></div>
+    </div>
+
+    <div class="card">
+      <div class="home-section-head">
+        <h3>Timeline</h3>
+        <button class="ghost" onclick="toggleAddForm('timeline-form')">+ Add Milestone</button>
+      </div>
+      <div id="timeline-form" class="inline-form" style="display:none">
+        <div class="row">
+          <div>
+            <label>Date</label>
+            <input type="date" id="tl-date">
+          </div>
+          <div>
+            <label>Milestone</label>
+            <input type="text" id="tl-label" placeholder="e.g. Launch episode 1">
+          </div>
+        </div>
+        <label>Notes</label>
+        <textarea id="tl-notes" placeholder="Optional detail"></textarea>
+        <button class="primary" onclick="addTimelineItem()">Save Milestone</button>
+      </div>
+      <div id="timeline-track"></div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-bottom:14px">Show Format</h3>
+      <div class="tile-grid" id="format-tiles"></div>
+    </div>
+  </section>
+
+  <!-- TO DO -->
+  <section id="panel-todo" class="panel">
     <div class="panel-head">
       <div>
-        <h2>Discussion Topics</h2>
-        <p class="sub">Broad themes the show can pull from. Ideas below can link to one of these.</p>
+        <h2>To Do</h2>
+        <p class="sub">Assign it, date it, track it. Done tasks move to the archive below.</p>
       </div>
     </div>
     <div class="card">
-      <label>Topic name</label>
+      <label>Task</label>
+      <input type="text" id="todo-task" placeholder="e.g. Draft show notes for Ep 12">
+      <div class="row">
+        <div>
+          <label>Assign to</label>
+          <select id="todo-assignee">
+            <option value="Cara">Cara</option>
+            <option value="Misty">Misty</option>
+          </select>
+        </div>
+        <div>
+          <label>Status</label>
+          <select id="todo-status">
+            <option value="waiting">Waiting</option>
+            <option value="inprocess">In Process</option>
+            <option value="done">Done</option>
+            <option value="notdoing">Not Doing</option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label>Do date</label>
+          <input type="date" id="todo-dodate">
+        </div>
+        <div>
+          <label>Due date</label>
+          <input type="date" id="todo-duedate">
+        </div>
+      </div>
+      <label>Notes</label>
+      <textarea id="todo-notes" placeholder="Details, links, context"></textarea>
+      <button class="primary" onclick="addTodo()">Add Task</button>
+    </div>
+
+    <div class="filter-row" id="todo-filters"></div>
+    <div id="todo-list"></div>
+
+    <div class="home-section-head" style="margin-top:24px">
+      <h3>Archive — Done</h3>
+      <button class="ghost" id="archive-toggle-btn" onclick="toggleArchive()">Show</button>
+    </div>
+    <div id="todo-archive" style="display:none"></div>
+  </section>
+
+  <!-- TOPIC DEVELOPMENT -->
+  <section id="panel-topics" class="panel">
+    <div class="panel-head">
+      <div>
+        <h2>Topic Development</h2>
+        <p class="sub">Editable anytime. Topics flow straight into the Episodes board.</p>
+      </div>
+    </div>
+    <div class="card">
+      <label>Topic</label>
       <input type="text" id="topic-name" placeholder="e.g. Setting boundaries with family">
       <label>Notes</label>
       <textarea id="topic-notes" placeholder="Why this matters, angle, anything to remember"></textarea>
@@ -400,38 +589,49 @@
     <div id="ideas-list"></div>
   </section>
 
-  <!-- EPISODES -->
+  <!-- EPISODES (KANBAN) -->
   <section id="panel-episodes" class="panel">
     <div class="panel-head">
       <div>
         <h2>Episodes</h2>
-        <p class="sub">What's actually getting produced, and where it stands.</p>
+        <p class="sub">Drag topic tiles onto an episode to attach them. Drag episode cards between columns to update status.</p>
       </div>
+      <button class="ghost" onclick="toggleAddForm('episode-form')">+ New Episode</button>
     </div>
-    <div class="card">
+    <div id="episode-form" class="card inline-form" style="display:none">
       <label>Episode title</label>
       <input type="text" id="ep-title" placeholder="e.g. Ep 12 — Chosen Family">
-      <div class="row">
-        <div>
-          <label>Planned date</label>
-          <input type="date" id="ep-date">
-        </div>
-        <div>
-          <label>Status</label>
-          <select id="ep-status">
-            <option value="idea">Idea</option>
-            <option value="planned">Planned</option>
-            <option value="recording">Recording</option>
-            <option value="editing">Editing</option>
-            <option value="published">Published</option>
-          </select>
-        </div>
-      </div>
+      <label>Planned date</label>
+      <input type="date" id="ep-date">
       <label>Notes</label>
       <textarea id="ep-notes" placeholder="Outline, talking points, guest info"></textarea>
       <button class="primary" onclick="addEpisode()">Add Episode</button>
     </div>
-    <div id="episodes-list"></div>
+
+    <h3 style="margin:20px 0 10px;font-size:12px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;">Unassigned Topics — drag onto an episode</h3>
+    <div id="topic-pool" class="topic-pool"></div>
+
+    <div class="kanban" id="episode-kanban"></div>
+  </section>
+
+  <!-- MEDIA BANK -->
+  <section id="panel-mediabank" class="panel">
+    <div class="panel-head">
+      <div>
+        <h2>Media Bank</h2>
+        <p class="sub">Full episodes and the clips cut from them, with notes on each.</p>
+      </div>
+    </div>
+    <div class="card">
+      <label>Episode title</label>
+      <input type="text" id="mb-title" placeholder="e.g. Ep 12 — Chosen Family (full)">
+      <label>Link</label>
+      <input type="url" id="mb-link" placeholder="https://...">
+      <label>Details</label>
+      <textarea id="mb-details" placeholder="Where it's hosted, length, description"></textarea>
+      <button class="primary" onclick="addMediaEpisode()">Add Full Episode</button>
+    </div>
+    <div id="mediabank-list"></div>
   </section>
 
   <!-- CALENDAR -->
@@ -439,9 +639,14 @@
     <div class="panel-head">
       <div>
         <h2>Content Calendar</h2>
-        <p class="sub">Plan the post, paste the link from Buffer/Metricool/Later once it's drafted there.</p>
+        <p class="sub">Schedule episodes and clips by platform. Paste the posting-tool link once it's drafted there.</p>
+      </div>
+      <div class="view-toggle">
+        <button class="ghost active" id="cal-view-grid" onclick="setCalView('grid')">Calendar</button>
+        <button class="ghost" id="cal-view-tiles" onclick="setCalView('tiles')">Tiles</button>
       </div>
     </div>
+
     <div class="card">
       <div class="row">
         <div>
@@ -461,35 +666,66 @@
           </select>
         </div>
       </div>
-      <label>Content / caption</label>
+      <label>Link to episode or clip</label>
+      <select id="post-link"><option value="">— none —</option></select>
+      <label>Note / caption (optional)</label>
       <textarea id="post-content" placeholder="Caption, hook, notes"></textarea>
-      <div class="row">
-        <div>
-          <label>Link to episode (optional)</label>
-          <select id="post-episode"><option value="">— none —</option></select>
-        </div>
-        <div>
-          <label>Posting tool link (optional)</label>
-          <input type="url" id="post-tool-link" placeholder="Buffer/Metricool draft URL">
-        </div>
-      </div>
-      <button class="primary" onclick="addPost()">Add Post</button>
+      <label>Posting tool link (optional)</label>
+      <input type="url" id="post-tool-link" placeholder="Buffer/Metricool draft URL">
+      <button class="primary" onclick="addPost()">Add To Calendar</button>
     </div>
-    <div id="calendar-list"></div>
+
+    <div id="cal-grid-view">
+      <div class="cal-nav">
+        <button class="ghost" onclick="shiftCalMonth(-1)">← Prev</button>
+        <h3 id="cal-month-label"></h3>
+        <button class="ghost" onclick="shiftCalMonth(1)">Next →</button>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+    </div>
+
+    <div id="cal-tiles-view" style="display:none">
+      <div id="calendar-list"></div>
+    </div>
   </section>
 
-  <!-- FORMAT & GOALS -->
-  <section id="panel-format" class="panel">
+  <!-- MEDIA PERFORMANCE -->
+  <section id="panel-performance" class="panel">
     <div class="panel-head">
       <div>
-        <h2>Format &amp; Goals</h2>
-        <p class="sub">One shared doc. Saves automatically a couple seconds after you stop typing.</p>
+        <h2>Media Performance</h2>
+        <p class="sub">Log numbers as you check them — totals and rankings below update automatically for both of you.</p>
       </div>
-      <span id="format-save-status" class="tag">Saved</span>
     </div>
     <div class="card">
-      <textarea id="format-doc" placeholder="Show mission, format structure, episode length, tone, target audience, goals for the season..."></textarea>
+      <label>What are you logging?</label>
+      <select id="perf-link"><option value="">— select episode or clip —</option></select>
+      <div class="row">
+        <div>
+          <label>Platform</label>
+          <input type="text" id="perf-platform" placeholder="Instagram, TikTok, Spotify...">
+        </div>
+        <div>
+          <label>Date checked</label>
+          <input type="date" id="perf-date">
+        </div>
+      </div>
+      <div class="row">
+        <div><label>Views</label><input type="text" id="perf-views" placeholder="0"></div>
+        <div><label>Likes</label><input type="text" id="perf-likes" placeholder="0"></div>
+        <div><label>Comments</label><input type="text" id="perf-comments" placeholder="0"></div>
+        <div><label>Shares</label><input type="text" id="perf-shares" placeholder="0"></div>
+      </div>
+      <button class="primary" onclick="addPerformance()">Log Numbers</button>
     </div>
+
+    <div class="dash-grid" id="perf-totals"></div>
+
+    <h3 style="margin:24px 0 10px;font-size:14px;">Top Performers</h3>
+    <div id="perf-top"></div>
+
+    <h3 style="margin:24px 0 10px;font-size:14px;">All Entries</h3>
+    <div id="perf-entries"></div>
   </section>
 
   <!-- ENGAGEMENT -->
@@ -525,16 +761,32 @@
     <div id="engagement-list"></div>
   </section>
 
+  <!-- ACCOUNT DIRECTORY -->
+  <section id="panel-accounts" class="panel">
+    <div class="panel-head">
+      <div>
+        <h2>Account Directory</h2>
+        <p class="sub">Usernames and handles only. For actual passwords, use a real password manager — this database has no login, so it isn't a safe place for those.</p>
+      </div>
+    </div>
+    <div class="card">
+      <label>Add a platform not listed below</label>
+      <input type="text" id="acct-new-platform" placeholder="e.g. Threads">
+      <button class="primary" onclick="addAccountPlatform()">Add Platform</button>
+    </div>
+    <div class="tile-grid" id="accounts-grid"></div>
+  </section>
+
 </main>
 
 <footer>
   <div class="foot-row">
-    <strong>Acceptance 101 — Planning Hub</strong>
+    <strong>Cuzzo — Planning Hub</strong>
     <span id="footer-sync">—</span>
   </div>
   <div class="foot-row">
     <span>Private planning tool — not indexed, no login required</span>
-    <span>Built by Claude for Cara &amp; her cousin</span>
+    <span>Built by Claude for Cara &amp; Misty</span>
   </div>
 </footer>
 
@@ -600,7 +852,7 @@ function addTopic(){
   const name = document.getElementById('topic-name').value.trim();
   if(!name) return;
   const notes = document.getElementById('topic-notes').value.trim();
-  db.collection('topics').add({name, notes, createdAt: Date.now()});
+  db.collection('topics').add({name, notes, episodeId: null, createdAt: Date.now()});
   document.getElementById('topic-name').value = '';
   document.getElementById('topic-notes').value = '';
 }
@@ -610,28 +862,73 @@ function deleteDoc(collection, id){
   db.collection(collection).doc(id).delete();
 }
 
+function toggleAddForm(id){
+  const el = document.getElementById(id);
+  if(el) el.style.display = (el.style.display==='none' ? 'block' : 'none');
+}
+
+function renderTopicItem(t){
+  return `
+    <div class="item-top">
+      <div style="flex:1">
+        <div class="item-title">${escapeHtml(t.name)}</div>
+        ${t.notes ? `<div class="item-notes">${escapeHtml(t.notes)}</div>` : ''}
+      </div>
+      <div style="display:flex;gap:4px">
+        <button class="ghost" onclick="startEditTopic('${t.id}')">Edit</button>
+        <button class="del-btn" onclick="deleteDoc('topics','${t.id}')">&times;</button>
+      </div>
+    </div>`;
+}
+
 db.collection('topics').orderBy('createdAt','desc').onSnapshot(snap=>{
   topicsCache = [];
-  const list = document.getElementById('topics-list');
-  if(snap.empty){ list.innerHTML = '<div class="empty-state">No topics yet — add one above.</div>'; }
-  else { list.innerHTML = ''; }
   snap.forEach(doc=>{
     const d = doc.data();
-    topicsCache.push({id: doc.id, name: d.name});
-    const el = document.createElement('div');
-    el.className = 'item';
-    el.innerHTML = `
-      <div class="item-top">
-        <div>
-          <div class="item-title">${escapeHtml(d.name)}</div>
-          ${d.notes ? `<div class="item-notes">${escapeHtml(d.notes)}</div>` : ''}
-        </div>
-        <button class="del-btn" onclick="deleteDoc('topics','${doc.id}')">&times;</button>
-      </div>`;
-    list.appendChild(el);
+    topicsCache.push({id: doc.id, name: d.name, notes: d.notes||'', episodeId: d.episodeId||null});
   });
+  const list = document.getElementById('topics-list');
+  if(topicsCache.length===0){
+    list.innerHTML = '<div class="empty-state">No topics yet — add one above.</div>';
+  } else {
+    list.innerHTML = '';
+    topicsCache.forEach(t=>{
+      const el = document.createElement('div');
+      el.className = 'item';
+      el.id = 'topic-item-' + t.id;
+      el.innerHTML = renderTopicItem(t);
+      list.appendChild(el);
+    });
+  }
   refreshTopicDropdowns();
+  renderKanban();
 });
+
+function startEditTopic(id){
+  const t = topicsCache.find(x=>x.id===id);
+  const el = document.getElementById('topic-item-'+id);
+  if(!t || !el) return;
+  el.innerHTML = `
+    <label>Topic</label>
+    <input type="text" id="edit-topic-name-${id}" value="${escapeHtml(t.name)}">
+    <label>Notes</label>
+    <textarea id="edit-topic-notes-${id}">${escapeHtml(t.notes)}</textarea>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <button class="primary" style="margin-top:0" onclick="saveTopicEdit('${id}')">Save</button>
+      <button class="ghost" onclick="cancelTopicEdit('${id}')">Cancel</button>
+    </div>`;
+}
+function saveTopicEdit(id){
+  const name = document.getElementById('edit-topic-name-'+id).value.trim();
+  const notes = document.getElementById('edit-topic-notes-'+id).value.trim();
+  if(!name) return;
+  db.collection('topics').doc(id).update({name, notes});
+}
+function cancelTopicEdit(id){
+  const t = topicsCache.find(x=>x.id===id);
+  const el = document.getElementById('topic-item-'+id);
+  if(t && el) el.innerHTML = renderTopicItem(t);
+}
 
 function refreshTopicDropdowns(){
   const sel = document.getElementById('idea-topic');
@@ -715,84 +1012,260 @@ function renderIdeas(){
   });
 }
 
-// ============ EPISODES ============
+// ============ TO DO ============
+let todosCache = [];
+let currentTodoFilter = 'all';
+const TODO_BORDER_CLASS = {waiting:'status-maybe', inprocess:'status-new', done:'status-yes', notdoing:'status-no'};
+
+function addTodo(){
+  const task = document.getElementById('todo-task').value.trim();
+  if(!task) return;
+  const assignee = document.getElementById('todo-assignee').value;
+  const status = document.getElementById('todo-status').value;
+  const doDate = document.getElementById('todo-dodate').value;
+  const dueDate = document.getElementById('todo-duedate').value;
+  const notes = document.getElementById('todo-notes').value.trim();
+  db.collection('todos').add({task, assignee, status, doDate, dueDate, notes, createdAt: Date.now()});
+  document.getElementById('todo-task').value = '';
+  document.getElementById('todo-notes').value = '';
+  document.getElementById('todo-dodate').value = '';
+  document.getElementById('todo-duedate').value = '';
+}
+
+function setTodoStatus(id, status){
+  db.collection('todos').doc(id).update({status});
+}
+
+function toggleArchive(){
+  const el = document.getElementById('todo-archive');
+  const btn = document.getElementById('archive-toggle-btn');
+  const showing = el.style.display !== 'none';
+  el.style.display = showing ? 'none' : 'block';
+  btn.textContent = showing ? 'Show' : 'Hide';
+}
+
+const todoFilterRow = document.getElementById('todo-filters');
+['all','Cara','Misty'].forEach(f=>{
+  const chip = document.createElement('button');
+  chip.className = 'filter-chip' + (f==='all' ? ' active' : '');
+  chip.textContent = f==='all' ? 'Everyone' : f;
+  chip.onclick = ()=>{
+    currentTodoFilter = f;
+    document.querySelectorAll('#todo-filters .filter-chip').forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    renderTodos();
+  };
+  todoFilterRow.appendChild(chip);
+});
+
+db.collection('todos').orderBy('createdAt','desc').onSnapshot(snap=>{
+  todosCache = [];
+  snap.forEach(doc=> todosCache.push({id:doc.id, ...doc.data()}));
+  renderTodos();
+});
+
+function todoItemHtml(t){
+  return `
+    <div class="item-top">
+      <div style="flex:1">
+        <div class="item-title">${escapeHtml(t.task)}</div>
+        <div class="item-meta">
+          <span class="tag ${t.assignee==='Cara' ? 'sapphire' : 'gold'}">${escapeHtml(t.assignee)}</span>
+          ${t.doDate ? `<span class="tag">Do: ${escapeHtml(t.doDate)}</span>` : ''}
+          ${t.dueDate ? `<span class="tag ruby">Due: ${escapeHtml(t.dueDate)}</span>` : ''}
+        </div>
+        ${t.notes ? `<div class="item-notes">${escapeHtml(t.notes)}</div>` : ''}
+      </div>
+      <button class="del-btn" onclick="deleteDoc('todos','${t.id}')">&times;</button>
+    </div>
+    <select class="status-select" style="margin-top:12px" onchange="setTodoStatus('${t.id}', this.value)">
+      <option value="waiting" ${t.status==='waiting'?'selected':''}>Waiting</option>
+      <option value="inprocess" ${t.status==='inprocess'?'selected':''}>In Process</option>
+      <option value="done" ${t.status==='done'?'selected':''}>Done</option>
+      <option value="notdoing" ${t.status==='notdoing'?'selected':''}>Not Doing</option>
+    </select>`;
+}
+
+function renderTodos(){
+  const list = document.getElementById('todo-list');
+  const archive = document.getElementById('todo-archive');
+  if(!list) return;
+  let active = todosCache.filter(t=>t.status!=='done');
+  let done = todosCache.filter(t=>t.status==='done');
+  if(currentTodoFilter!=='all'){
+    active = active.filter(t=>t.assignee===currentTodoFilter);
+    done = done.filter(t=>t.assignee===currentTodoFilter);
+  }
+  list.innerHTML = active.length ? active.map(t=>`<div class="item ${TODO_BORDER_CLASS[t.status]||''}">${todoItemHtml(t)}</div>`).join('') : '<div class="empty-state">Nothing on the list — add a task above.</div>';
+  archive.innerHTML = done.length ? done.map(t=>`<div class="item status-archive">${todoItemHtml(t)}</div>`).join('') : '<div class="empty-state">No completed tasks yet.</div>';
+}
+
+// ============ EPISODES (KANBAN) ============
+let episodesFullCache = [];
+
+const EP_STATUSES = [
+  {key:'idea', label:'Idea'},
+  {key:'planned', label:'Planned'},
+  {key:'recording', label:'Recording'},
+  {key:'editing', label:'Editing'},
+  {key:'published', label:'Published'}
+];
+
 function addEpisode(){
   const title = document.getElementById('ep-title').value.trim();
   if(!title) return;
   const date = document.getElementById('ep-date').value;
-  const status = document.getElementById('ep-status').value;
   const notes = document.getElementById('ep-notes').value.trim();
-  db.collection('episodes').add({title, date, status, notes, createdAt: Date.now()});
+  db.collection('episodes').add({title, date, status:'idea', notes, createdAt: Date.now()});
   document.getElementById('ep-title').value = '';
   document.getElementById('ep-date').value = '';
   document.getElementById('ep-notes').value = '';
+  document.getElementById('episode-form').style.display = 'none';
 }
 
-function setEpisodeStatus(id, status){
-  db.collection('episodes').doc(id).update({status});
+function deleteEpisode(id){
+  if(!confirm("Delete this episode? Linked topics return to the unassigned pool.")) return;
+  db.collection('episodes').doc(id).delete();
+  topicsCache.filter(t=>t.episodeId===id).forEach(t=> db.collection('topics').doc(t.id).update({episodeId:null}));
 }
-
-const EP_STATUS_CLASS = {idea:'sapphire', planned:'gold', recording:'ruby', editing:'gold', published:'emerald'};
 
 db.collection('episodes').orderBy('createdAt','desc').onSnapshot(snap=>{
   episodesCache = [];
-  const list = document.getElementById('episodes-list');
-  if(snap.empty){ list.innerHTML = '<div class="empty-state">No episodes yet — add one above.</div>'; }
-  else { list.innerHTML = ''; }
+  episodesFullCache = [];
   snap.forEach(doc=>{
     const d = doc.data();
     episodesCache.push({id: doc.id, title: d.title});
-    const linkedIdeas = ideasCache.filter(i=>i.episodeId===doc.id);
-    const el = document.createElement('div');
-    el.className = 'item';
-    el.innerHTML = `
-      <div class="item-top">
-        <div style="flex:1">
-          <div class="item-title">${escapeHtml(d.title)}</div>
-          <div class="item-meta">
-            <span class="tag ${EP_STATUS_CLASS[d.status]||''}">${escapeHtml(d.status||'idea')}</span>
-            ${d.date ? `<span class="tag">${escapeHtml(d.date)}</span>` : ''}
-          </div>
-          ${d.notes ? `<div class="item-notes">${escapeHtml(d.notes)}</div>` : ''}
-          ${linkedIdeas.length ? `<div class="item-notes">Linked ideas: ${linkedIdeas.map(i=>escapeHtml(i.title)).join(', ')}</div>` : ''}
-        </div>
-        <button class="del-btn" onclick="deleteDoc('episodes','${doc.id}')">&times;</button>
-      </div>
-      <select class="status-select" style="margin-top:12px" onchange="setEpisodeStatus('${doc.id}', this.value)">
-        <option value="idea" ${d.status==='idea'?'selected':''}>Idea</option>
-        <option value="planned" ${d.status==='planned'?'selected':''}>Planned</option>
-        <option value="recording" ${d.status==='recording'?'selected':''}>Recording</option>
-        <option value="editing" ${d.status==='editing'?'selected':''}>Editing</option>
-        <option value="published" ${d.status==='published'?'selected':''}>Published</option>
-      </select>`;
-    list.appendChild(el);
+    episodesFullCache.push({id: doc.id, ...d});
   });
   refreshEpisodeDropdowns();
+  if(typeof refreshPostLinkDropdown==='function') refreshPostLinkDropdown();
+  if(typeof refreshPerfDropdown==='function') refreshPerfDropdown();
   renderIdeas();
+  renderKanban();
+  if(typeof renderCalGrid==='function') renderCalGrid();
+  if(typeof renderCalTiles==='function') renderCalTiles();
+  if(typeof renderPerformance==='function') renderPerformance();
 });
 
 function refreshEpisodeDropdowns(){
-  ['idea-episode','post-episode'].forEach(id=>{
-    const sel = document.getElementById(id);
-    const current = sel.value;
-    sel.innerHTML = '<option value="">— none —</option>' +
-      episodesCache.map(e=>`<option value="${e.id}">${escapeHtml(e.title)}</option>`).join('');
-    sel.value = current;
+  const sel = document.getElementById('idea-episode');
+  const current = sel.value;
+  sel.innerHTML = '<option value="">— none —</option>' +
+    episodesCache.map(e=>`<option value="${e.id}">${escapeHtml(e.title)}</option>`).join('');
+  sel.value = current;
+}
+
+function renderKanban(){
+  const board = document.getElementById('episode-kanban');
+  if(!board) return;
+  board.innerHTML = '';
+  EP_STATUSES.forEach(s=>{
+    const col = document.createElement('div');
+    col.className = 'kanban-col';
+    const eps = episodesFullCache.filter(e=>(e.status||'idea')===s.key);
+    col.innerHTML = `<h4>${s.label} (${eps.length})</h4>`;
+    eps.forEach(ep=>{
+      const linkedTopics = topicsCache.filter(t=>t.episodeId===ep.id);
+      const card = document.createElement('div');
+      card.className = 'episode-card';
+      card.draggable = true;
+      card.innerHTML = `
+        <button class="del-btn" onclick="event.stopPropagation();deleteEpisode('${ep.id}')">&times;</button>
+        <div class="ep-title">${escapeHtml(ep.title)}</div>
+        ${ep.date ? `<div class="item-meta"><span class="tag">${escapeHtml(ep.date)}</span></div>` : ''}
+        <div class="ep-topics">${linkedTopics.map(t=>`<span class="tag sapphire">${escapeHtml(t.name)}</span>`).join('')}</div>
+      `;
+      card.addEventListener('dragstart', e=>{
+        e.dataTransfer.setData('type','episode');
+        e.dataTransfer.setData('id', ep.id);
+      });
+      card.addEventListener('dragover', e=>{ e.preventDefault(); e.stopPropagation(); card.classList.add('dragover'); });
+      card.addEventListener('dragleave', ()=> card.classList.remove('dragover'));
+      card.addEventListener('drop', e=>{
+        e.preventDefault(); e.stopPropagation();
+        card.classList.remove('dragover');
+        const type = e.dataTransfer.getData('type');
+        const id = e.dataTransfer.getData('id');
+        if(type==='topic'){ db.collection('topics').doc(id).update({episodeId: ep.id}); }
+      });
+      col.appendChild(card);
+    });
+    col.addEventListener('dragover', e=>{ e.preventDefault(); col.classList.add('dragover'); });
+    col.addEventListener('dragleave', ()=> col.classList.remove('dragover'));
+    col.addEventListener('drop', e=>{
+      e.preventDefault();
+      col.classList.remove('dragover');
+      const type = e.dataTransfer.getData('type');
+      const id = e.dataTransfer.getData('id');
+      if(type==='episode'){ db.collection('episodes').doc(id).update({status: s.key}); }
+    });
+    board.appendChild(col);
+  });
+  renderTopicPool();
+}
+
+function renderTopicPool(){
+  const pool = document.getElementById('topic-pool');
+  if(!pool) return;
+  const unassigned = topicsCache.filter(t=>!t.episodeId);
+  pool.innerHTML = unassigned.length ? '' : '<span class="empty-state" style="padding:6px 0">All topics are assigned.</span>';
+  unassigned.forEach(t=>{
+    const chip = document.createElement('div');
+    chip.className = 'topic-tile';
+    chip.draggable = true;
+    chip.textContent = t.name;
+    chip.addEventListener('dragstart', e=>{
+      e.dataTransfer.setData('type','topic');
+      e.dataTransfer.setData('id', t.id);
+    });
+    pool.appendChild(chip);
   });
 }
 
 // ============ CALENDAR / POSTS ============
+let postsCache = [];
+let calViewMonth = new Date().getMonth();
+let calViewYear = new Date().getFullYear();
+const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const POST_STATUS_CLASS = {draft:'sapphire', scheduled:'gold', posted:'emerald'};
+
+function setCalView(view){
+  document.getElementById('cal-grid-view').style.display = view==='grid' ? 'block':'none';
+  document.getElementById('cal-tiles-view').style.display = view==='tiles' ? 'block':'none';
+  document.getElementById('cal-view-grid').classList.toggle('active', view==='grid');
+  document.getElementById('cal-view-tiles').classList.toggle('active', view==='tiles');
+}
+
+function shiftCalMonth(delta){
+  calViewMonth += delta;
+  if(calViewMonth<0){ calViewMonth=11; calViewYear--; }
+  if(calViewMonth>11){ calViewMonth=0; calViewYear++; }
+  renderCalGrid();
+}
+
+function refreshPostLinkDropdown(){
+  const sel = document.getElementById('post-link');
+  if(!sel) return;
+  const current = sel.value;
+  let html = '<option value="">— none —</option>';
+  if(episodesCache.length) html += '<optgroup label="Episodes">' + episodesCache.map(e=>`<option value="episode:${e.id}">${escapeHtml(e.title)}</option>`).join('') + '</optgroup>';
+  if(typeof mediaClipsCache!=='undefined' && mediaClipsCache.length) html += '<optgroup label="Clips">' + mediaClipsCache.map(c=>`<option value="clip:${c.id}">${escapeHtml(c.title)}</option>`).join('') + '</optgroup>';
+  sel.innerHTML = html;
+  sel.value = current;
+}
+
 function addPost(){
-  const content = document.getElementById('post-content').value.trim();
-  if(!content) return;
   const date = document.getElementById('post-date').value;
   const platform = document.getElementById('post-platform').value.trim();
   const status = document.getElementById('post-status').value;
-  const episodeId = document.getElementById('post-episode').value;
+  const linkVal = document.getElementById('post-link').value;
+  const [linkedType, linkedId] = linkVal ? linkVal.split(':') : [null, null];
+  const content = document.getElementById('post-content').value.trim();
   const toolLink = document.getElementById('post-tool-link').value.trim();
-  db.collection('posts').add({content, date, platform, status, episodeId, toolLink, createdAt: Date.now()});
-  document.getElementById('post-content').value = '';
+  if(!date && !content && !linkedId) return;
+  db.collection('posts').add({date, platform, status, linkedType, linkedId, content, toolLink, createdAt: Date.now()});
   document.getElementById('post-platform').value = '';
+  document.getElementById('post-content').value = '';
   document.getElementById('post-tool-link').value = '';
 }
 
@@ -800,15 +1273,65 @@ function setPostStatus(id, status){
   db.collection('posts').doc(id).update({status});
 }
 
-const POST_STATUS_CLASS = {draft:'sapphire', scheduled:'gold', posted:'emerald'};
+function postLinkedLabel(d){
+  if(d.linkedType==='episode'){
+    const ep = episodesCache.find(e=>e.id===d.linkedId);
+    return ep ? ep.title : '';
+  }
+  if(d.linkedType==='clip' && typeof mediaClipsCache!=='undefined'){
+    const c = mediaClipsCache.find(c=>c.id===d.linkedId);
+    return c ? c.title : '';
+  }
+  return '';
+}
 
 db.collection('posts').orderBy('date','asc').onSnapshot(snap=>{
+  postsCache = [];
+  snap.forEach(doc=> postsCache.push({id:doc.id, ...doc.data()}));
+  renderCalGrid();
+  renderCalTiles();
+});
+
+function renderCalGrid(){
+  const label = document.getElementById('cal-month-label');
+  if(!label) return;
+  label.textContent = `${MONTH_NAMES[calViewMonth]} ${calViewYear}`;
+  const grid = document.getElementById('cal-grid');
+  grid.innerHTML = '';
+  ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(d=>{
+    const el = document.createElement('div');
+    el.className = 'cal-daylabel';
+    el.textContent = d;
+    grid.appendChild(el);
+  });
+  const firstDay = new Date(calViewYear, calViewMonth, 1).getDay();
+  const daysInMonth = new Date(calViewYear, calViewMonth+1, 0).getDate();
+  for(let i=0;i<firstDay;i++){
+    const el = document.createElement('div');
+    el.className = 'cal-day empty';
+    grid.appendChild(el);
+  }
+  for(let d=1; d<=daysInMonth; d++){
+    const dateStr = `${calViewYear}-${String(calViewMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const items = postsCache.filter(p=>p.date===dateStr);
+    const cell = document.createElement('div');
+    cell.className = 'cal-day';
+    cell.innerHTML = `<div class="daynum">${d}</div>` + items.map(p=>{
+      const cls = p.status==='posted' ? 'emerald' : (p.status==='draft' ? 'ruby' : '');
+      const lbl = p.platform || postLinkedLabel(p) || 'Post';
+      return `<span class="cal-chip ${cls}">${escapeHtml(lbl)}</span>`;
+    }).join('');
+    grid.appendChild(cell);
+  }
+}
+
+function renderCalTiles(){
   const list = document.getElementById('calendar-list');
-  if(snap.empty){ list.innerHTML = '<div class="empty-state">Nothing scheduled yet — add a post above.</div>'; return; }
+  if(!list) return;
+  if(postsCache.length===0){ list.innerHTML = '<div class="empty-state">Nothing scheduled yet — add one above.</div>'; return; }
   list.innerHTML = '';
-  snap.forEach(doc=>{
-    const d = doc.data();
-    const episode = episodesCache.find(e=>e.id===d.episodeId);
+  postsCache.forEach(d=>{
+    const linkedLabel = postLinkedLabel(d);
     const el = document.createElement('div');
     el.className = 'item';
     el.innerHTML = `
@@ -819,44 +1342,377 @@ db.collection('posts').orderBy('date','asc').onSnapshot(snap=>{
             ${d.platform ? `<span class="tag sapphire">${escapeHtml(d.platform)}</span>` : ''}
             <span class="tag ${POST_STATUS_CLASS[d.status]||''}">${escapeHtml(d.status)}</span>
           </div>
-          <div class="item-notes">${escapeHtml(d.content)}</div>
-          ${episode ? `<div class="item-meta"><span class="tag gold">${escapeHtml(episode.title)}</span></div>` : ''}
+          ${linkedLabel ? `<div class="item-meta"><span class="tag gold">${escapeHtml(linkedLabel)}</span></div>` : ''}
+          ${d.content ? `<div class="item-notes">${escapeHtml(d.content)}</div>` : ''}
           ${d.toolLink ? `<div class="inspo-links"><a href="${escapeHtml(d.toolLink)}" target="_blank" rel="noopener">Open in posting tool →</a></div>` : ''}
         </div>
-        <button class="del-btn" onclick="deleteDoc('posts','${doc.id}')">&times;</button>
+        <button class="del-btn" onclick="deleteDoc('posts','${d.id}')">&times;</button>
       </div>
-      <select class="status-select" style="margin-top:12px" onchange="setPostStatus('${doc.id}', this.value)">
+      <select class="status-select" style="margin-top:12px" onchange="setPostStatus('${d.id}', this.value)">
         <option value="draft" ${d.status==='draft'?'selected':''}>Draft</option>
         <option value="scheduled" ${d.status==='scheduled'?'selected':''}>Scheduled</option>
         <option value="posted" ${d.status==='posted'?'selected':''}>Posted</option>
       </select>`;
     list.appendChild(el);
   });
+}
+
+// ============ HOME: QUOTES ============
+function addQuote(){
+  const text = document.getElementById('quote-text').value.trim();
+  if(!text) return;
+  const author = document.getElementById('quote-author').value.trim();
+  db.collection('quotes').add({text, author, createdAt: Date.now()});
+  document.getElementById('quote-text').value = '';
+  document.getElementById('quote-author').value = '';
+  document.getElementById('quote-form').style.display = 'none';
+}
+db.collection('quotes').orderBy('createdAt','desc').onSnapshot(snap=>{
+  const list = document.getElementById('quotes-list');
+  if(!list) return;
+  if(snap.empty){ list.innerHTML = '<div class="empty-state">No quotes saved yet.</div>'; return; }
+  list.innerHTML = '';
+  snap.forEach(doc=>{
+    const d = doc.data();
+    const el = document.createElement('div');
+    el.className = 'quote-card';
+    el.innerHTML = `
+      <div class="quote-text">"${escapeHtml(d.text)}"</div>
+      ${d.author ? `<div class="quote-author">— ${escapeHtml(d.author)}</div>` : ''}
+      <button class="del-btn" onclick="deleteDoc('quotes','${doc.id}')">&times;</button>`;
+    list.appendChild(el);
+  });
 });
 
-// ============ FORMAT & GOALS ============
-const formatDoc = document.getElementById('format-doc');
-const formatStatus = document.getElementById('format-save-status');
-let formatSaveTimer = null;
-let formatLoadedOnce = false;
+// ============ HOME: GOALS ============
+function addGoal(){
+  const text = document.getElementById('goal-text').value.trim();
+  if(!text) return;
+  db.collection('goals').add({text, createdAt: Date.now()});
+  document.getElementById('goal-text').value = '';
+  document.getElementById('goal-form').style.display = 'none';
+}
+db.collection('goals').orderBy('createdAt','desc').onSnapshot(snap=>{
+  const list = document.getElementById('goals-list');
+  if(!list) return;
+  if(snap.empty){ list.innerHTML = '<div class="empty-state">No goals set yet.</div>'; return; }
+  list.innerHTML = '';
+  snap.forEach(doc=>{
+    const d = doc.data();
+    const el = document.createElement('div');
+    el.className = 'item';
+    el.innerHTML = `<div class="item-top"><div class="item-title">${escapeHtml(d.text)}</div><button class="del-btn" onclick="deleteDoc('goals','${doc.id}')">&times;</button></div>`;
+    list.appendChild(el);
+  });
+});
 
-db.collection('meta').doc('formatGoals').onSnapshot(doc=>{
-  if(doc.exists && document.activeElement !== formatDoc){
-    formatDoc.value = doc.data().content || '';
+// ============ HOME: TIMELINE ============
+function addTimelineItem(){
+  const label = document.getElementById('tl-label').value.trim();
+  if(!label) return;
+  const date = document.getElementById('tl-date').value;
+  const notes = document.getElementById('tl-notes').value.trim();
+  db.collection('timeline').add({label, date, notes, createdAt: Date.now()});
+  document.getElementById('tl-label').value = '';
+  document.getElementById('tl-date').value = '';
+  document.getElementById('tl-notes').value = '';
+  document.getElementById('timeline-form').style.display = 'none';
+}
+db.collection('timeline').onSnapshot(snap=>{
+  const track = document.getElementById('timeline-track');
+  if(!track) return;
+  let items = [];
+  snap.forEach(doc=> items.push({id:doc.id, ...doc.data()}));
+  items.sort((a,b)=> (a.date||'').localeCompare(b.date||''));
+  if(items.length===0){ track.innerHTML = '<div class="empty-state">No milestones yet.</div>'; return; }
+  track.innerHTML = '<div class="timeline-line">' + items.map(it=>`
+    <div class="timeline-point">
+      <div class="timeline-dot"></div>
+      <div class="timeline-content">
+        ${it.date ? `<span class="tag">${escapeHtml(it.date)}</span>` : ''}
+        <div class="item-title" style="margin-top:4px">${escapeHtml(it.label)}</div>
+        ${it.notes ? `<div class="item-notes">${escapeHtml(it.notes)}</div>` : ''}
+        <button class="del-btn" onclick="deleteDoc('timeline','${it.id}')">&times;</button>
+      </div>
+    </div>`).join('') + '</div>';
+});
+
+// ============ HOME: FORMAT TILES ============
+const TILE_DEFS = [
+  {key:'frequency', label:'Frequency'},
+  {key:'tone', label:'Tone'},
+  {key:'outro', label:'Outro'},
+  {key:'intro', label:'Intro'},
+  {key:'distribution', label:'Distribution'}
+];
+let formatTilesData = {};
+db.collection('meta').doc('formatTiles').onSnapshot(doc=>{
+  formatTilesData = doc.exists ? doc.data() : {};
+  renderFormatTiles();
+});
+function renderFormatTiles(){
+  const grid = document.getElementById('format-tiles');
+  if(!grid) return;
+  grid.innerHTML = TILE_DEFS.map(t=>{
+    const val = formatTilesData[t.key];
+    return `<div class="format-tile">
+      <div class="tile-label">${t.label}</div>
+      <div class="tile-value" id="tile-value-${t.key}" onclick="editTile('${t.key}')">${val ? escapeHtml(val) : '<span class="empty-state" style="padding:0">Click to set</span>'}</div>
+    </div>`;
+  }).join('');
+}
+function editTile(key){
+  const el = document.getElementById('tile-value-'+key);
+  const current = formatTilesData[key] || '';
+  el.innerHTML = `<input type="text" id="tile-input-${key}" value="${escapeHtml(current)}" style="font-size:13px;padding:6px 8px;">`;
+  const input = document.getElementById('tile-input-'+key);
+  input.focus();
+  const save = ()=>{ db.collection('meta').doc('formatTiles').set({[key]: input.value.trim()}, {merge:true}); };
+  input.addEventListener('blur', save);
+  input.addEventListener('keydown', e=>{ if(e.key==='Enter'){ input.blur(); } });
+}
+
+// ============ MEDIA BANK ============
+let mediaEpisodesCache = [];
+let mediaClipsCache = [];
+
+function addMediaEpisode(){
+  const title = document.getElementById('mb-title').value.trim();
+  if(!title) return;
+  const link = document.getElementById('mb-link').value.trim();
+  const details = document.getElementById('mb-details').value.trim();
+  db.collection('mediaEpisodes').add({title, link, details, createdAt: Date.now()});
+  document.getElementById('mb-title').value = '';
+  document.getElementById('mb-link').value = '';
+  document.getElementById('mb-details').value = '';
+}
+
+function deleteMediaEpisode(id){
+  if(!confirm("Delete this episode and all its clips? This can't be undone.")) return;
+  db.collection('mediaEpisodes').doc(id).delete();
+  mediaClipsCache.filter(c=>c.parentId===id).forEach(c=> db.collection('mediaClips').doc(c.id).delete());
+}
+
+function addMediaClip(parentId){
+  const title = document.getElementById('clip-title-'+parentId).value.trim();
+  if(!title) return;
+  const link = document.getElementById('clip-link-'+parentId).value.trim();
+  const notes = document.getElementById('clip-notes-'+parentId).value.trim();
+  db.collection('mediaClips').add({parentId, title, link, notes, createdAt: Date.now()});
+  document.getElementById('clip-form-'+parentId).style.display = 'none';
+}
+
+db.collection('mediaEpisodes').orderBy('createdAt','desc').onSnapshot(snap=>{
+  mediaEpisodesCache = [];
+  snap.forEach(doc=> mediaEpisodesCache.push({id:doc.id, ...doc.data()}));
+  renderMediaBank();
+});
+
+db.collection('mediaClips').orderBy('createdAt','desc').onSnapshot(snap=>{
+  mediaClipsCache = [];
+  snap.forEach(doc=> mediaClipsCache.push({id:doc.id, ...doc.data()}));
+  renderMediaBank();
+  refreshPostLinkDropdown();
+  refreshPerfDropdown();
+  renderCalGrid();
+  renderCalTiles();
+  renderPerformance();
+});
+
+function renderMediaBank(){
+  const list = document.getElementById('mediabank-list');
+  if(!list) return;
+  if(mediaEpisodesCache.length===0){ list.innerHTML = '<div class="empty-state">No episodes in the media bank yet.</div>'; return; }
+  list.innerHTML = '';
+  mediaEpisodesCache.forEach(me=>{
+    const clips = mediaClipsCache.filter(c=>c.parentId===me.id);
+    const el = document.createElement('div');
+    el.className = 'item';
+    el.innerHTML = `
+      <div class="item-top">
+        <div style="flex:1">
+          <div class="item-title">${escapeHtml(me.title)}</div>
+          ${me.link ? `<div class="inspo-links"><a href="${escapeHtml(me.link)}" target="_blank" rel="noopener">${escapeHtml(me.link)}</a></div>` : ''}
+          ${me.details ? `<div class="item-notes">${escapeHtml(me.details)}</div>` : ''}
+        </div>
+        <button class="del-btn" onclick="deleteMediaEpisode('${me.id}')">&times;</button>
+      </div>
+      <div class="clip-block">
+        <div class="clip-list">
+          ${clips.length ? clips.map(c=>`
+            <div class="clip-row">
+              <div>
+                <strong>${escapeHtml(c.title)}</strong>
+                ${c.link ? `<div class="inspo-links"><a href="${escapeHtml(c.link)}" target="_blank" rel="noopener">${escapeHtml(c.link)}</a></div>` : ''}
+                ${c.notes ? `<div class="item-notes">${escapeHtml(c.notes)}</div>` : ''}
+              </div>
+              <button class="del-btn" onclick="deleteDoc('mediaClips','${c.id}')">&times;</button>
+            </div>`).join('') : '<span class="empty-state" style="padding:8px 0">No clips yet.</span>'}
+        </div>
+        <button class="ghost" onclick="toggleAddForm('clip-form-${me.id}')">+ Add Clip</button>
+        <div id="clip-form-${me.id}" class="inline-form" style="display:none">
+          <label>Clip title</label>
+          <input type="text" id="clip-title-${me.id}" placeholder="e.g. Clip 1 — the boundaries bit">
+          <label>Link</label>
+          <input type="url" id="clip-link-${me.id}" placeholder="https://...">
+          <label>Notes</label>
+          <textarea id="clip-notes-${me.id}" placeholder="Hook, platform it's cut for"></textarea>
+          <button class="primary" onclick="addMediaClip('${me.id}')">Save Clip</button>
+        </div>
+      </div>`;
+    list.appendChild(el);
+  });
+}
+
+// ============ MEDIA PERFORMANCE ============
+let performanceCache = [];
+
+function refreshPerfDropdown(){
+  const sel = document.getElementById('perf-link');
+  if(!sel) return;
+  const current = sel.value;
+  let html = '<option value="">— select episode or clip —</option>';
+  if(episodesCache.length) html += '<optgroup label="Episodes">' + episodesCache.map(e=>`<option value="episode:${e.id}">${escapeHtml(e.title)}</option>`).join('') + '</optgroup>';
+  if(mediaClipsCache.length) html += '<optgroup label="Clips">' + mediaClipsCache.map(c=>`<option value="clip:${c.id}">${escapeHtml(c.title)}</option>`).join('') + '</optgroup>';
+  sel.innerHTML = html;
+  sel.value = current;
+}
+
+function addPerformance(){
+  const linkVal = document.getElementById('perf-link').value;
+  if(!linkVal) return;
+  const [itemType, itemId] = linkVal.split(':');
+  const platform = document.getElementById('perf-platform').value.trim();
+  const date = document.getElementById('perf-date').value;
+  const views = Number(document.getElementById('perf-views').value) || 0;
+  const likes = Number(document.getElementById('perf-likes').value) || 0;
+  const comments = Number(document.getElementById('perf-comments').value) || 0;
+  const shares = Number(document.getElementById('perf-shares').value) || 0;
+  db.collection('performance').add({itemType, itemId, platform, date, views, likes, comments, shares, createdAt: Date.now()});
+  ['perf-platform','perf-views','perf-likes','perf-comments','perf-shares'].forEach(id=> document.getElementById(id).value='');
+}
+
+db.collection('performance').orderBy('createdAt','desc').onSnapshot(snap=>{
+  performanceCache = [];
+  snap.forEach(doc=> performanceCache.push({id:doc.id, ...doc.data()}));
+  renderPerformance();
+});
+
+function perfLabel(entry){
+  if(entry.itemType==='episode'){
+    const ep = episodesCache.find(e=>e.id===entry.itemId);
+    return ep ? ep.title : 'Deleted episode';
   }
-  formatLoadedOnce = true;
+  const c = mediaClipsCache.find(c=>c.id===entry.itemId);
+  return c ? c.title : 'Deleted clip';
+}
+
+function renderPerformance(){
+  const totalsEl = document.getElementById('perf-totals');
+  if(!totalsEl) return;
+  const totals = performanceCache.reduce((acc,e)=>{
+    acc.views += e.views||0; acc.likes += e.likes||0; acc.comments += e.comments||0; acc.shares += e.shares||0;
+    return acc;
+  }, {views:0,likes:0,comments:0,shares:0});
+  totalsEl.innerHTML = `
+    <div class="dash-stat"><div class="num">${totals.views.toLocaleString()}</div><div class="lbl">Views</div></div>
+    <div class="dash-stat"><div class="num">${totals.likes.toLocaleString()}</div><div class="lbl">Likes</div></div>
+    <div class="dash-stat"><div class="num">${totals.comments.toLocaleString()}</div><div class="lbl">Comments</div></div>
+    <div class="dash-stat"><div class="num">${totals.shares.toLocaleString()}</div><div class="lbl">Shares</div></div>`;
+
+  const byItem = {};
+  performanceCache.forEach(e=>{
+    const key = e.itemType+':'+e.itemId;
+    if(!byItem[key]) byItem[key] = {itemType:e.itemType, itemId:e.itemId, views:0};
+    byItem[key].views += e.views||0;
+  });
+  const top = Object.values(byItem).sort((a,b)=>b.views-a.views).slice(0,5);
+  document.getElementById('perf-top').innerHTML = top.length ? top.map(t=>`
+    <div class="item"><div class="item-top"><div class="item-title">${escapeHtml(perfLabel(t))}</div><span class="tag emerald">${t.views.toLocaleString()} views</span></div></div>
+  `).join('') : '<div class="empty-state">No numbers logged yet.</div>';
+
+  document.getElementById('perf-entries').innerHTML = performanceCache.length ? performanceCache.map(e=>`
+    <div class="item">
+      <div class="item-top">
+        <div style="flex:1">
+          <div class="item-title">${escapeHtml(perfLabel(e))}</div>
+          <div class="item-meta">
+            ${e.platform ? `<span class="tag sapphire">${escapeHtml(e.platform)}</span>`:''}
+            ${e.date ? `<span class="tag">${escapeHtml(e.date)}</span>`:''}
+          </div>
+          <div class="item-notes">${e.views||0} views · ${e.likes||0} likes · ${e.comments||0} comments · ${e.shares||0} shares</div>
+        </div>
+        <button class="del-btn" onclick="deleteDoc('performance','${e.id}')">&times;</button>
+      </div>
+    </div>`).join('') : '<div class="empty-state">Nothing logged yet.</div>';
+}
+
+// ============ ACCOUNT DIRECTORY ============
+const DEFAULT_PLATFORMS = ['TikTok','Twitter / X','Facebook','Instagram','YouTube','Spotify','Reddit','Threads','LinkedIn','Pinterest','Podcast Host'];
+
+function slugify(s){
+  return s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+}
+
+let accountsCache = {};
+
+function ensureDefaultPlatforms(){
+  DEFAULT_PLATFORMS.forEach(p=>{
+    const key = slugify(p);
+    if(!accountsCache[key]){
+      db.collection('accounts').doc(key).set({platform:p, handle:'', notes:''}, {merge:true});
+    }
+  });
+}
+
+function addAccountPlatform(){
+  const name = document.getElementById('acct-new-platform').value.trim();
+  if(!name) return;
+  const key = slugify(name);
+  db.collection('accounts').doc(key).set({platform:name, handle:'', notes:''}, {merge:true});
+  document.getElementById('acct-new-platform').value = '';
+}
+
+db.collection('accounts').onSnapshot(snap=>{
+  accountsCache = {};
+  snap.forEach(doc=> accountsCache[doc.id] = {id:doc.id, ...doc.data()});
+  if(Object.keys(accountsCache).length===0){ ensureDefaultPlatforms(); return; }
+  renderAccounts();
 });
 
-formatDoc.addEventListener('input', ()=>{
-  formatStatus.textContent = 'Saving…';
-  formatStatus.className = 'tag gold';
-  clearTimeout(formatSaveTimer);
-  formatSaveTimer = setTimeout(()=>{
-    db.collection('meta').doc('formatGoals').set({content: formatDoc.value, updatedAt: Date.now()})
-      .then(()=>{ formatStatus.textContent = 'Saved'; formatStatus.className = 'tag emerald'; })
-      .catch(()=>{ formatStatus.textContent = 'Save failed — check connection'; formatStatus.className = 'tag ruby'; });
-  }, 900);
-});
+function copyText(text, btn){
+  if(!text) return;
+  navigator.clipboard.writeText(text).then(()=>{
+    const original = btn.textContent;
+    btn.textContent = 'Copied';
+    setTimeout(()=>{ btn.textContent = original; }, 1200);
+  });
+}
+
+function saveAccountField(id, field, value){
+  db.collection('accounts').doc(id).set({[field]: value}, {merge:true});
+}
+
+function renderAccounts(){
+  const grid = document.getElementById('accounts-grid');
+  if(!grid) return;
+  const list = Object.values(accountsCache).sort((a,b)=> a.platform.localeCompare(b.platform));
+  grid.innerHTML = list.map(a=>`
+    <div class="format-tile">
+      <div class="tile-label">${escapeHtml(a.platform)}</div>
+      <label style="margin-top:8px">Handle / Username</label>
+      <div class="copy-row">
+        <input type="text" id="acct-handle-${a.id}" value="${escapeHtml(a.handle||'')}" onblur="saveAccountField('${a.id}','handle',this.value)">
+        <button class="ghost" onclick="copyText(document.getElementById('acct-handle-${a.id}').value, this)">Copy</button>
+      </div>
+      <label>Notes</label>
+      <div class="copy-row">
+        <input type="text" id="acct-notes-${a.id}" value="${escapeHtml(a.notes||'')}" onblur="saveAccountField('${a.id}','notes',this.value)">
+        <button class="ghost" onclick="copyText(document.getElementById('acct-notes-${a.id}').value, this)">Copy</button>
+      </div>
+      ${!DEFAULT_PLATFORMS.includes(a.platform) ? `<button class="del-btn" style="margin-top:8px" onclick="deleteDoc('accounts','${a.id}')">Remove</button>` : ''}
+    </div>`).join('');
+}
 
 // ============ ENGAGEMENT LOG ============
 function addEngagement(){
