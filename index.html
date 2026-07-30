@@ -1187,15 +1187,15 @@ function renderKanban(){
       const card = document.createElement('div');
       card.className = 'episode-card';
       card.draggable = true;
-      card.innerHTML = `
+    card.innerHTML = `
   <button class="del-btn" onclick="event.stopPropagation();deleteEpisode('${ep.id}')">&times;</button>
   <details class="ep-details">
     <summary class="ep-title">${escapeHtml(ep.title)}</summary>
     <div class="item-meta" style="margin-top:8px;">
-  ${ep.audioLink ? `<a href="${escapeHtml(ep.audioLink)}" target="_blank" rel="noopener noreferrer">Audio</a> · ` : ''}
-  ${ep.editLink ? `<a href="${escapeHtml(ep.editLink)}" target="_blank" rel="noopener noreferrer">Edit</a> · ` : ''}
-  ${ep.clipLink ? `<a href="${escapeHtml(ep.clipLink)}" target="_blank" rel="noopener noreferrer">Clip</a>` : ''}
-</div>
+      ${ep.audioLink ? `<a href="${escapeHtml(ep.audioLink)}" target="_blank" rel="noopener noreferrer">Audio</a>` : ''}
+      ${ep.editLink ? ` · <a href="${escapeHtml(ep.editLink)}" target="_blank" rel="noopener noreferrer">Edit</a>` : ''}
+      ${ep.clipLink ? ` · <a href="${escapeHtml(ep.clipLink)}" target="_blank" rel="noopener noreferrer">Clip</a>` : ''}
+    </div>
     ${ep.date ? `<div class="item-meta"><span class="tag">${escapeHtml(ep.date)}</span></div>` : ''}
     <div class="ep-topics">${linkedTopics.map(t=>`<span class="tag sapphire">${escapeHtml(t.name)}</span>`).join('')}</div>
     <div class="item-meta" style="margin-top:8px;">${escapeHtml(ep.notes || '')}</div>
