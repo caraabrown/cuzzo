@@ -1110,41 +1110,48 @@ function renderTodos(){
 let episodesFullCache = [];
 
 const EP_STATUSES = [
-  {key:'idea', label:'Idea'},
-  {key:'planned', label:'Planned'},
+  {key:'idea',      label:'Idea'},
+  {key:'planned',   label:'Planned'},
   {key:'recording', label:'Recording'},
-  {key:'editing', label:'Editing'},
+  {key:'editing',   label:'Editing'},
   {key:'published', label:'Published'}
 ];
 
 function addEpisode(){
   const title = document.getElementById('ep-title').value.trim();
   if(!title) return;
-  const date = document.getElementById('ep-date').value;
-  const notes = document.getElementById('ep-notes').value.trim();
+  const date      = document.getElementById('ep-date').value;
+  const notes     = document.getElementById('ep-notes').value.trim();
   const audioLink = document.getElementById('ep-audio').value.trim();
-  const editLink = document.getElementById('ep-edit').value.trim();
-  const clipLink = document.getElementById('ep-clip').value.trim();
-db.collection('episodes').add({
-  title, date, status:'idea', notes,
-  createdAt: Date.now(),
-  audioLink, editLink, clipLink
-});
-  audioLink, editLink, clipLink
-});  document.getElementById('ep-title').value = '';
+  const editLink  = document.getElementById('ep-edit').value.trim();
+  const clipLink  = document.getElementById('ep-clip').value.trim();
+
+  db.collection('episodes').add({
+    title,
+    date,
+    status: 'idea',
+    notes,
+    audioLink,
+    editLink,
+    clipLink,
+    createdAt: Date.now()
+  }).catch(err => console.error('addEpisode error', err));
+
+  document.getElementById('ep-title').value = '';
   document.getElementById('ep-date').value = '';
   document.getElementById('ep-notes').value = '';
-  document.getElementById('episode-form').style.display = 'none';
   document.getElementById('ep-audio').value = '';
   document.getElementById('ep-edit').value = '';
   document.getElementById('ep-clip').value = '';
-  console.log('addEpisode called');
+  document.getElementById('episode-form').style.display = 'none';
 }
 
 function deleteEpisode(id){
   if(!confirm("Delete this episode? Linked topics return to the unassigned pool.")) return;
   db.collection('episodes').doc(id).delete();
-  topicsCache.filter(t=>t.episodeId===id).forEach(t=> db.collection('topics').doc(t.id).update({episodeId:null}));
+  topicsCache
+    .filter(t => t.episodeId === id)
+    .forEach(t => db.collection('topics').doc(t.id).update({episodeId: null}));
 }
 
 db.collection('episodes').orderBy('createdAt','desc').onSnapshot(snap=>{
@@ -1152,90 +1159,7 @@ db.collection('episodes').orderBy('createdAt','desc').onSnapshot(snap=>{
   episodesFullCache = [];
   snap.forEach(doc=>{
     const d = doc.data();
-    episodesCache.push({id: doc.id, title: d.title});
-    episodesFullCache.push({id: doc.id, ...d});
-  });
-  refreshEpisodeDropdowns();
-  if(typeof refreshPostLinkDropdown==='function') refreshPostLinkDropdown();
-  if(typeof refreshPerfDropdown==='function') refreshPerfDropdown();
-  renderIdeas();
-  renderKanban();
-  if(typeof renderCalGrid==='function') renderCalGrid();
-  if(typeof renderCalTiles==='function') renderCalTiles();
-  if(typeof renderPerformance==='function') renderPerformance();
-});
-
-function refreshEpisodeDropdowns(){
-  const sel = document.getElementById('idea-episode');
-  const current = sel.value;
-  sel.innerHTML = '<option value="">— none —</option>' +
-    episodesCache.map(e=>`<option value="${e.id}">${escapeHtml(e.title)}</option>`).join('');
-  sel.value = current;
-}
-
-function renderKanban(){
-  const board = document.getElementById('episode-kanban');
-  if(!board) return;
-  board.innerHTML = '';
-  EP_STATUSES.forEach(s=>{
-    const col = document.createElement('div');
-    col.className = 'kanban-col';
-    const eps = episodesFullCache.filter(e=>(e.status||'idea')===s.key);
-    col.innerHTML = `<h4>${s.label} (${eps.length})</h4>`;
-    eps.forEach(ep=>{
-      const linkedTopics = topicsCache.filter(t=>t.episodeId===ep.id);
-      const card = document.createElement('div');
-      card.className = 'episode-card';
-      card.draggable = true;
-    card.innerHTML = `
-  <button class="del-btn" onclick="event.stopPropagation();deleteEpisode('${ep.id}')">&times;</button>
-  <details class="ep-details">
-    <summary class="ep-title">${escapeHtml(ep.title)}</summary>
-    <div class="item-meta" style="margin-top:8px;">
-      ${ep.audioLink ? `<a href="${escapeHtml(ep.audioLink)}" target="_blank" rel="noopener noreferrer">Audio</a>` : ''}
-      ${ep.editLink ? ` · <a href="${escapeHtml(ep.editLink)}" target="_blank" rel="noopener noreferrer">Edit</a>` : ''}
-      ${ep.clipLink ? ` · <a href="${escapeHtml(ep.clipLink)}" target="_blank" rel="noopener noreferrer">Clip</a>` : ''}
-    </div>
-    ${ep.date ? `<div class="item-meta"><span class="tag">${escapeHtml(ep.date)}</span></div>` : ''}
-    <div class="ep-topics">${linkedTopics.map(t=>`<span class="tag sapphire">${escapeHtml(t.name)}</span>`).join('')}</div>
-    <div class="item-meta" style="margin-top:8px;">${escapeHtml(ep.notes || '')}</div>
-  </details>
-`;
-     card.querySelector('summary')?.addEventListener('click', e=> e.stopPropagation());
-      
-      card.addEventListener('dragover', e=>{ e.preventDefault(); e.stopPropagation(); card.classList.add('dragover'); });
-      card.addEventListener('dragleave', ()=> card.classList.remove('dragover'));
-      card.addEventListener('drop', e=>{
-        e.preventDefault(); e.stopPropagation();
-        card.classList.remove('dragover');
-        const type = e.dataTransfer.getData('type');
-        const id = e.dataTransfer.getData('id');
-        if(type==='topic'){
-  db.collection('topics').doc(id).update({episodeId: ep.id}).then(()=>{
-    renderTopicPool();
-  });
-}
-     
-      });
-      col.appendChild(card);
-    });
-    col.addEventListener('dragover', e=>{ e.preventDefault(); col.classList.add('dragover'); });
-    col.addEventListener('dragleave', ()=> col.classList.remove('dragover'));
-    col.addEventListener('drop', e=>{
-      e.preventDefault();
-      col.classList.remove('dragover');
-      const type = e.dataTransfer.getData('type');
-      const id = e.dataTransfer.getData('id');
-     if(type==='episode'){
-  db.collection('episodes').doc(id).update({status: s.key}).then(()=>{
-    renderEpisodes();
-  });
-}
-    });
-    board.appendChild(col);
-  });
-  renderTopicPool();
-}
+    episodes
 
 function renderTopicPool(){
   const pool = document.getElementById('topic-pool');
