@@ -1125,8 +1125,11 @@ function addEpisode(){
   const audioLink = document.getElementById('ep-audio').value.trim();
   const editLink = document.getElementById('ep-edit').value.trim();
   const clipLink = document.getElementById('ep-clip').value.trim();
-  db.collection('episodes').add({title, date, status:'idea', notes, createdAt, audioLink, editLink, clipLink: Date.now()});
-  document.getElementById('ep-title').value = '';
+db.collection('episodes').add({
+  title, date, status:'idea', notes,
+  createdAt: Date.now(),
+  audioLink, editLink, clipLink
+});  document.getElementById('ep-title').value = '';
   document.getElementById('ep-date').value = '';
   document.getElementById('ep-notes').value = '';
   document.getElementById('episode-form').style.display = 'none';
