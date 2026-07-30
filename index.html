@@ -605,6 +605,12 @@
       <input type="date" id="ep-date">
       <label>Notes</label>
       <textarea id="ep-notes" placeholder="Outline, talking points, guest info"></textarea>
+      <label>Audio link</label>
+      <input type="url" id="ep-audio" placeholder="https://...">
+      <label>Edit link</label>
+      <input type="url" id="ep-edit" placeholder="https://...">
+      <label>Clip link</label>
+      <input type="url" id="ep-clip" placeholder="https://...">
       <button class="primary" onclick="addEpisode()">Add Episode</button>
     </div>
 
@@ -1116,11 +1122,17 @@ function addEpisode(){
   if(!title) return;
   const date = document.getElementById('ep-date').value;
   const notes = document.getElementById('ep-notes').value.trim();
-  db.collection('episodes').add({title, date, status:'idea', notes, createdAt: Date.now()});
+  const audioLink = document.getElementById('ep-audio').value.trim();
+  const editLink = document.getElementById('ep-edit').value.trim();
+  const clipLink = document.getElementById('ep-clip').value.trim();
+  db.collection('episodes').add({title, date, status:'idea', notes, createdAt, audioLink, editLink, clipLink: Date.now()});
   document.getElementById('ep-title').value = '';
   document.getElementById('ep-date').value = '';
   document.getElementById('ep-notes').value = '';
   document.getElementById('episode-form').style.display = 'none';
+  document.getElementById('ep-audio').value = '';
+  document.getElementById('ep-edit').value = '';
+  document.getElementById('ep-clip').value = '';
 }
 
 function deleteEpisode(id){
@@ -1170,15 +1182,21 @@ function renderKanban(){
       card.className = 'episode-card';
       card.draggable = true;
       card.innerHTML = `
-        <button class="del-btn" onclick="event.stopPropagation();deleteEpisode('${ep.id}')">&times;</button>
-        <div class="ep-title">${escapeHtml(ep.title)}</div>
-        ${ep.date ? `<div class="item-meta"><span class="tag">${escapeHtml(ep.date)}</span></div>` : ''}
-        <div class="ep-topics">${linkedTopics.map(t=>`<span class="tag sapphire">${escapeHtml(t.name)}</span>`).join('')}</div>
-      `;
-      card.addEventListener('dragstart', e=>{
-        e.dataTransfer.setData('type','episode');
-        e.dataTransfer.setData('id', ep.id);
-      });
+  <button class="del-btn" onclick="event.stopPropagation();deleteEpisode('${ep.id}')">&times;</button>
+  <details class="ep-details">
+    <summary class="ep-title">${escapeHtml(ep.title)}</summary>
+    <div class="item-meta" style="margin-top:8px;">
+  ${ep.audioLink ? `<a href="${escapeHtml(ep.audioLink)}" target="_blank" rel="noopener noreferrer">Audio</a> · ` : ''}
+  ${ep.editLink ? `<a href="${escapeHtml(ep.editLink)}" target="_blank" rel="noopener noreferrer">Edit</a> · ` : ''}
+  ${ep.clipLink ? `<a href="${escapeHtml(ep.clipLink)}" target="_blank" rel="noopener noreferrer">Clip</a>` : ''}
+</div>
+    ${ep.date ? `<div class="item-meta"><span class="tag">${escapeHtml(ep.date)}</span></div>` : ''}
+    <div class="ep-topics">${linkedTopics.map(t=>`<span class="tag sapphire">${escapeHtml(t.name)}</span>`).join('')}</div>
+    <div class="item-meta" style="margin-top:8px;">${escapeHtml(ep.notes || '')}</div>
+  </details>
+`;
+     card.querySelector('summary')?.addEventListener('click', e=> e.stopPropagation());
+      
       card.addEventListener('dragover', e=>{ e.preventDefault(); e.stopPropagation(); card.classList.add('dragover'); });
       card.addEventListener('dragleave', ()=> card.classList.remove('dragover'));
       card.addEventListener('drop', e=>{
@@ -1186,7 +1204,12 @@ function renderKanban(){
         card.classList.remove('dragover');
         const type = e.dataTransfer.getData('type');
         const id = e.dataTransfer.getData('id');
-        if(type==='topic'){ db.collection('topics').doc(id).update({episodeId: ep.id}); }
+        if(type==='topic'){
+  db.collection('topics').doc(id).update({episodeId: ep.id}).then(()=>{
+    renderTopicPool();
+  });
+}
+     
       });
       col.appendChild(card);
     });
@@ -1197,7 +1220,11 @@ function renderKanban(){
       col.classList.remove('dragover');
       const type = e.dataTransfer.getData('type');
       const id = e.dataTransfer.getData('id');
-      if(type==='episode'){ db.collection('episodes').doc(id).update({status: s.key}); }
+     if(type==='episode'){
+  db.collection('episodes').doc(id).update({status: s.key}).then(()=>{
+    renderEpisodes();
+  });
+}
     });
     board.appendChild(col);
   });
