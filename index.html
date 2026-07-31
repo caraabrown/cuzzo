@@ -1251,15 +1251,16 @@ function renderKanban(){
       card.addEventListener('dragleave', ()=> card.classList.remove('dragover'));
       card.addEventListener('drop', e=>{
         e.preventDefault();
-        card.classList.remove('dragover');
         e.stopPropagation();
+        card.classList.remove('dragover');
         const type = e.dataTransfer.getData('type');
         const id   = e.dataTransfer.getData('id');
+        console.log('card drop:', {type, id, epId: ep.id});
         if(type==='topic'){
-          db.collection('topics').doc(id).update({episodeId: ep.id}).then(()=>{
+          db.collection('topics').doc(id).set({episodeId: ep.id}, {merge:true}).then(()=>{
             renderTopicPool();
             renderKanban();
-          });
+          }).catch(err => console.error('topic link error', err));
         }
       });
       col.appendChild(card);
@@ -1277,9 +1278,8 @@ function renderKanban(){
       if(type==='episode'){
         db.collection('episodes').doc(id).update({status: s.key}).then(()=> renderKanban());
       }
-      if(type==='topic'){
-        db.collection('topics').doc(id).update({episodeId: null}).then(()=> renderTopicPool());
-      }
+      // Do NOT handle topic drops on columns — only cards handle topic assignment
+      // Dropping a topic on empty column space does nothing (keeps current assignment)
     });
     board.appendChild(col);
   });
