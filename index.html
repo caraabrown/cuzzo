@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -345,6 +344,11 @@
   .episode-card .ep-title{font-size:13px;font-weight:600;padding-right:16px;}
   .episode-card .ep-topics{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
   .episode-card .del-btn{position:absolute;top:6px;right:6px;font-size:14px;}
+  .ep-details summary{cursor:pointer;list-style:none;}
+  .ep-details summary::-webkit-details-marker{display:none;}
+  .ep-details{margin-top:2px;}
+  .ep-links a{font-size:12px;text-decoration:none;}
+  .ep-links a:hover{text-decoration:underline;}
 
   .clip-block{margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
   .clip-row{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;}
@@ -612,6 +616,8 @@
       <input type="url" id="ep-edit" placeholder="https://...">
       <label>Clip link</label>
       <input type="url" id="ep-clip" placeholder="https://...">
+      <label>Publish date</label>
+      <input type="date" id="ep-publish-date">
       <button class="primary" onclick="addEpisode()">Add Episode</button>
     </div>
 
@@ -1126,6 +1132,7 @@ function addEpisode(){
   const audioLink = document.getElementById('ep-audio').value.trim();
   const editLink  = document.getElementById('ep-edit').value.trim();
   const clipLink  = document.getElementById('ep-clip').value.trim();
+  const publishDate = document.getElementById('ep-publish-date').value;
 
   db.collection('episodes').add({
     title,
@@ -1135,6 +1142,7 @@ function addEpisode(){
     audioLink,
     editLink,
     clipLink,
+    publishDate,
     createdAt: Date.now()
   }).catch(err => console.error('addEpisode error', err));
 
@@ -1144,6 +1152,7 @@ function addEpisode(){
   document.getElementById('ep-audio').value = '';
   document.getElementById('ep-edit').value = '';
   document.getElementById('ep-clip').value = '';
+  document.getElementById('ep-publish-date').value = '';
   document.getElementById('episode-form').style.display = 'none';
 }
 
@@ -1160,7 +1169,121 @@ db.collection('episodes').orderBy('createdAt','desc').onSnapshot(snap=>{
   episodesFullCache = [];
   snap.forEach(doc=>{
     const d = doc.data();
-    episodes
+    episodesCache.push({
+      id: doc.id,
+      title: d.title || '',
+      date: d.date || '',
+      status: d.status || 'idea',
+      notes: d.notes || '',
+      audioLink: d.audioLink || '',
+      editLink: d.editLink || '',
+      clipLink: d.clipLink || '',
+      publishDate: d.publishDate || '',
+      createdAt: d.createdAt || 0
+    });
+    episodesFullCache.push({id: doc.id, ...d});
+  });
+  renderKanban();
+  renderTopicPool();
+  refreshEpisodeDropdowns();
+  refreshPostLinkDropdown();
+  refreshPerfDropdown();
+});
+
+function refreshEpisodeDropdowns(){
+  const sel = document.getElementById('idea-episode');
+  if(!sel) return;
+  const current = sel.value;
+  sel.innerHTML = '<option value="">— none —</option>' +
+    episodesCache.map(e=>`<option value="${e.id}">${escapeHtml(e.title)}</option>`).join('');
+  sel.value = current;
+}
+
+function renderKanban(){
+  const board = document.getElementById('episode-kanban');
+  if(!board) return;
+  board.innerHTML = '';
+  EP_STATUSES.forEach(s=>{
+    const col = document.createElement('div');
+    col.className = 'kanban-col';
+    col.dataset.status = s.key;
+    col.innerHTML = `<h4>${s.label}</h4>`;
+    const eps = episodesCache.filter(ep=>ep.status===s.key);
+    eps.forEach(ep=>{
+      const linkedTopics = topicsCache.filter(t=>t.episodeId===ep.id);
+      const card = document.createElement('div');
+      card.className = 'episode-card';
+      card.draggable = true;
+      card.innerHTML = `
+        <button class="del-btn" onclick="event.stopPropagation();deleteEpisode('${ep.id}')">&times;</button>
+        <details class="ep-details">
+          <summary class="ep-title">${escapeHtml(ep.title)}</summary>
+          <div class="item-meta" style="margin-top:8px;">
+            ${ep.publishDate ? `<span class="tag gold">Publishes ${escapeHtml(ep.publishDate)}</span>` : ''}
+            ${ep.date ? `<span class="tag">${escapeHtml(ep.date)}</span>` : ''}
+          </div>
+          ${linkedTopics.length ? `<div class="ep-topics">${linkedTopics.map(t=>`<span class="tag sapphire">${escapeHtml(t.name)}</span>`).join('')}</div>` : ''}
+          ${ep.notes ? `<div class="item-notes" style="margin-top:6px;font-size:12px;">${escapeHtml(ep.notes)}</div>` : ''}
+          <div class="ep-links item-meta" style="margin-top:8px;">
+            ${ep.audioLink ? `<a href="${escapeHtml(ep.audioLink)}" target="_blank" rel="noopener noreferrer">Audio</a>` : ''}
+            ${ep.editLink ? ` · <a href="${escapeHtml(ep.editLink)}" target="_blank" rel="noopener noreferrer">Edit</a>` : ''}
+            ${ep.clipLink ? ` · <a href="${escapeHtml(ep.clipLink)}" target="_blank" rel="noopener noreferrer">Clip</a>` : ''}
+          </div>
+        </details>
+      `;
+      // Prevent summary click from triggering drag
+      const summary = card.querySelector('summary');
+      if(summary){
+        summary.addEventListener('click', e=> e.stopPropagation());
+      }
+      card.addEventListener('dragstart', e=>{
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('type','episode');
+        e.dataTransfer.setData('id', ep.id);
+      });
+      // Allow topic tiles to be dropped onto this card
+      card.addEventListener('dragover', e=>{
+        if(e.dataTransfer.types.includes('type')){
+          e.preventDefault();
+          card.classList.add('dragover');
+        }
+      });
+      card.addEventListener('dragleave', ()=> card.classList.remove('dragover'));
+      card.addEventListener('drop', e=>{
+        e.preventDefault();
+        card.classList.remove('dragover');
+        e.stopPropagation();
+        const type = e.dataTransfer.getData('type');
+        const id   = e.dataTransfer.getData('id');
+        if(type==='topic'){
+          db.collection('topics').doc(id).update({episodeId: ep.id}).then(()=>{
+            renderTopicPool();
+            renderKanban();
+          });
+        }
+      });
+      col.appendChild(card);
+    });
+    col.addEventListener('dragover', e=>{
+      e.preventDefault();
+      col.classList.add('dragover');
+    });
+    col.addEventListener('dragleave', ()=> col.classList.remove('dragover'));
+    col.addEventListener('drop', e=>{
+      e.preventDefault();
+      col.classList.remove('dragover');
+      const type = e.dataTransfer.getData('type');
+      const id   = e.dataTransfer.getData('id');
+      if(type==='episode'){
+        db.collection('episodes').doc(id).update({status: s.key}).then(()=> renderKanban());
+      }
+      if(type==='topic'){
+        db.collection('topics').doc(id).update({episodeId: null}).then(()=> renderTopicPool());
+      }
+    });
+    board.appendChild(col);
+  });
+}
 
 function renderTopicPool(){
   const pool = document.getElementById('topic-pool');
