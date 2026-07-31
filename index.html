@@ -1243,10 +1243,8 @@ function renderKanban(){
       });
       // Allow topic tiles to be dropped onto this card
       card.addEventListener('dragover', e=>{
-        if(e.dataTransfer.types.includes('type')){
-          e.preventDefault();
-          card.classList.add('dragover');
-        }
+        e.preventDefault();
+        card.classList.add('dragover');
       });
       card.addEventListener('dragleave', ()=> card.classList.remove('dragover'));
       card.addEventListener('drop', e=>{
