@@ -1237,12 +1237,13 @@ function renderKanban(){
       `;
       // Prevent summary click from triggering drag
       const summary = card.querySelector('summary');
-      if(summary){
-        summary.addEventListener('click', e=> e.stopPropagation());
-      }
       // Click-to-assign: if a topic is selected, clicking this card assigns it
-      card.addEventListener('click', ()=>{
+      // Put handler on details element itself so it catches all clicks inside the card
+      const detailsEl = card.querySelector('.ep-details');
+      const assignHandler = (e)=>{
         if(selectedTopicId){
+          e.preventDefault();
+          e.stopPropagation();
           db.collection('topics').doc(selectedTopicId).set({episodeId: ep.id}, {merge:true}).then(()=>{
             selectedTopicId = null;
             document.querySelectorAll('.topic-tile.selected').forEach(el=> el.classList.remove('selected'));
@@ -1251,7 +1252,13 @@ function renderKanban(){
             renderTopicPool();
             renderKanban();
           }).catch(err => console.error('topic assign error', err));
+          return false;
         }
+      };
+      // Attach click-to-assign to every element that could receive a click
+      [card, detailsEl, summary].forEach(el=>{
+        if(!el) return;
+        el.addEventListener('click', assignHandler);
       });
       card.addEventListener('dragstart', e=>{
         e.dataTransfer.effectAllowed = 'move';
