@@ -1265,9 +1265,16 @@ function renderKanban(){
         e.dataTransfer.setData('id', ep.id);
       });
       // Capture-phase listeners: fire BEFORE child elements can block the event
+      card.addEventListener('dragenter', e=>{
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        card.classList.add('dragover');
+      }, true);
       card.addEventListener('dragover', e=>{
         e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
         card.classList.add('dragover');
+        console.log('card dragover firing');
       }, true);
       card.addEventListener('drop', e=>{
         e.preventDefault();
