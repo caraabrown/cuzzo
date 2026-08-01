@@ -351,6 +351,17 @@
   .ep-links a:hover{text-decoration:underline;}
   .topic-tile.selected{border-color:var(--ruby);background:rgba(224,30,56,0.15);}
   #assign-hint{font-size:12px;color:var(--text-dim);padding:6px 0;display:none;}
+  .acct-tile{background:var(--bg-panel);border:1px solid var(--border);border-radius:var(--radius);padding:16px;display:flex;flex-direction:column;gap:8px;}
+  .acct-tile .acct-header{display:flex;align-items:center;gap:10px;}
+  .acct-tile .acct-icon{width:32px;height:32px;border-radius:8px;flex-shrink:0;background:var(--bg);display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .acct-tile .acct-icon img{width:24px;height:24px;object-fit:contain;}
+  .acct-icon-fallback{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;border-radius:8px;}
+  .acct-tile .acct-name{font-weight:600;font-size:13px;}
+  .acct-tile .acct-handle{font-size:13px;color:var(--ruby);font-weight:500;min-height:18px;word-break:break-all;}
+  .acct-tile .acct-handle:empty::before{content:'No handle set';color:var(--text-dim);font-style:italic;font-weight:400;}
+  .acct-tile .acct-edit{display:flex;gap:6px;align-items:center;}
+  .acct-tile .acct-edit input{flex:1;font-size:12px;}
+  .acct-tile .acct-notes{font-size:11px;color:var(--text-dim);min-height:14px;}
 
   .clip-block{margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
   .clip-row{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;}
@@ -1807,6 +1818,40 @@ function renderPerformance(){
 // ============ ACCOUNT DIRECTORY ============
 const DEFAULT_PLATFORMS = ['TikTok','Twitter / X','Facebook','Instagram','YouTube','Spotify','Reddit','Threads','LinkedIn','Pinterest','Podcast Host'];
 
+// Map platform names to domains for favicons
+const PLATFORM_DOMAINS = {
+  'TikTok':'tiktok.com',
+  'Twitter / X':'x.com',
+  'Facebook':'facebook.com',
+  'Instagram':'instagram.com',
+  'YouTube':'youtube.com',
+  'Spotify':'spotify.com',
+  'Reddit':'reddit.com',
+  'Threads':'threads.net',
+  'LinkedIn':'linkedin.com',
+  'Pinterest':'pinterest.com',
+  'Podcast Host':'podcasticons.com'
+};
+
+function getPlatformIcon(platform){
+  let domain = PLATFORM_DOMAINS[platform];
+  if(!domain){
+    // Guess domain from platform name: lowercase, remove spaces, add .com
+    const slug = platform.toLowerCase().replace(/[^a-z0-9]/g,'');
+    domain = slug + '.com';
+  }
+  return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+}
+
+function onPlatformIconError(img, platform){
+  // Fallback: show first letter in a circle
+  const letter = (platform||'?')[0].toUpperCase();
+  const colors = ['#ff0050','#00f2ea','#1da1f2','#4267b2','#e1306c','#ff0000','#1db954','#ff5700','#3a3a3a','#0077b5','#bd081c','#833ab4'];
+  const color = colors[platform.charCodeAt(0) % colors.length];
+  const parent = img.parentElement;
+  parent.innerHTML = `<div class="acct-icon-fallback" style="background:${color}">${letter}</div>`;
+}
+
 function slugify(s){
   return s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
 }
@@ -1854,21 +1899,26 @@ function renderAccounts(){
   const grid = document.getElementById('accounts-grid');
   if(!grid) return;
   const list = Object.values(accountsCache).sort((a,b)=> a.platform.localeCompare(b.platform));
-  grid.innerHTML = list.map(a=>`
-    <div class="format-tile">
-      <div class="tile-label">${escapeHtml(a.platform)}</div>
-      <label style="margin-top:8px">Handle / Username</label>
-      <div class="copy-row">
-        <input type="text" id="acct-handle-${a.id}" value="${escapeHtml(a.handle||'')}" onblur="saveAccountField('${a.id}','handle',this.value)">
-        <button class="ghost" onclick="copyText(document.getElementById('acct-handle-${a.id}').value, this)">Copy</button>
+  grid.innerHTML = list.map(a=>{
+    const icon = getPlatformIcon(a.platform);
+    const handle = a.handle || '';
+    return `
+    <div class="acct-tile">
+      <div class="acct-header">
+        <div class="acct-icon">
+          <img src="${icon}" onerror="onPlatformIconError(this,'${escapeHtml(a.platform)}')" alt="${escapeHtml(a.platform)}">
+        </div>
+        <div class="acct-name">${escapeHtml(a.platform)}</div>
       </div>
-      <label>Notes</label>
-      <div class="copy-row">
-        <input type="text" id="acct-notes-${a.id}" value="${escapeHtml(a.notes||'')}" onblur="saveAccountField('${a.id}','notes',this.value)">
-        <button class="ghost" onclick="copyText(document.getElementById('acct-notes-${a.id}').value, this)">Copy</button>
+      <div class="acct-handle">${escapeHtml(handle)}</div>
+      <div class="acct-edit">
+        <input type="text" placeholder="Edit handle..." value="${escapeHtml(handle)}" onblur="saveAccountField('${a.id}','handle',this.value); renderAccounts();">
+        <button class="ghost" onclick="copyText('${escapeHtml(handle)}', this)">Copy</button>
       </div>
-      ${!DEFAULT_PLATFORMS.includes(a.platform) ? `<button class="del-btn" style="margin-top:8px" onclick="deleteDoc('accounts','${a.id}')">Remove</button>` : ''}
-    </div>`).join('');
+      <input type="text" class="acct-notes" placeholder="Notes..." value="${escapeHtml(a.notes||'')}" onblur="saveAccountField('${a.id}','notes',this.value)">
+      ${!DEFAULT_PLATFORMS.includes(a.platform) ? `<button class="del-btn" style="margin-top:4px;align-self:flex-start;" onclick="deleteDoc('accounts','${a.id}')">Remove</button>` : ''}
+    </div>`;
+  }).join('');
 }
 
 // ============ ENGAGEMENT LOG ============
