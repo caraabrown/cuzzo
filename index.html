@@ -1236,6 +1236,10 @@ function renderKanban(){
         </details>
       `;
       card.dataset.epId = ep.id;
+      // Disable native dragging on child elements that can interfere
+      card.querySelectorAll('details, summary, a, span, div').forEach(el=>{
+        el.draggable = false;
+      });
       // Click-to-assign: if a topic is selected, clicking this card assigns it
       const assignHandler = (e)=>{
         if(selectedTopicId){
@@ -1260,6 +1264,25 @@ function renderKanban(){
         e.dataTransfer.setData('type','episode');
         e.dataTransfer.setData('id', ep.id);
       });
+      // Capture-phase listeners: fire BEFORE child elements can block the event
+      card.addEventListener('dragover', e=>{
+        e.preventDefault();
+        card.classList.add('dragover');
+      }, true);
+      card.addEventListener('drop', e=>{
+        e.preventDefault();
+        e.stopPropagation();
+        card.classList.remove('dragover');
+        const type = e.dataTransfer.getData('type');
+        const id   = e.dataTransfer.getData('id');
+        console.log('card drop:', {type, id, epId: ep.id});
+        if(type==='topic'){
+          db.collection('topics').doc(id).set({episodeId: ep.id}, {merge:true}).then(()=>{
+            renderTopicPool();
+            renderKanban();
+          }).catch(err => console.error('topic link error', err));
+        }
+      }, true);
       col.appendChild(card);
     });
     col.addEventListener('dragover', e=>{
@@ -1281,20 +1304,15 @@ function renderKanban(){
     board.appendChild(col);
   });
 
-  // Delegated drag/drop on the board — handles topic drops on episode cards
-  // Uses event delegation so it works through <details>, <summary>, <a>, etc.
-  board.ondragover = function(e){
+  // Also keep board-level delegation as a backup
+  board.addEventListener('dragover', e=>{
     const card = e.target.closest('.episode-card');
     if(card){
       e.preventDefault();
       card.classList.add('dragover');
     }
-  };
-  board.ondragleave = function(e){
-    const card = e.target.closest('.episode-card');
-    if(card) card.classList.remove('dragover');
-  };
-  board.ondrop = function(e){
+  });
+  board.addEventListener('drop', e=>{
     const card = e.target.closest('.episode-card');
     if(!card) return;
     e.preventDefault();
@@ -1310,7 +1328,7 @@ function renderKanban(){
         renderKanban();
       }).catch(err => console.error('topic link error', err));
     }
-  };
+  });
 }
 
 function renderTopicPool(){
@@ -1326,6 +1344,8 @@ function renderTopicPool(){
     chip.title = 'Drag onto an episode card, or click to assign';
     chip.style.cursor = 'pointer';
     chip.addEventListener('dragstart', e=>{
+      console.log('topic dragstart:', t.id, t.name);
+      e.dataTransfer.effectAllowed = 'move';
       e.dataTransfer.setData('type','topic');
       e.dataTransfer.setData('id', t.id);
     });
