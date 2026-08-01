@@ -1235,11 +1235,8 @@ function renderKanban(){
           </div>
         </details>
       `;
-      // Prevent summary click from triggering drag
-      const summary = card.querySelector('summary');
+      card.dataset.epId = ep.id;
       // Click-to-assign: if a topic is selected, clicking this card assigns it
-      // Put handler on details element itself so it catches all clicks inside the card
-      const detailsEl = card.querySelector('.ep-details');
       const assignHandler = (e)=>{
         if(selectedTopicId){
           e.preventDefault();
@@ -1255,42 +1252,14 @@ function renderKanban(){
           return false;
         }
       };
-      // Attach click-to-assign to every element that could receive a click
-      [card, detailsEl, summary].forEach(el=>{
-        if(!el) return;
-        el.addEventListener('click', assignHandler);
+      [card, card.querySelector('.ep-details'), card.querySelector('summary')].forEach(el=>{
+        if(el) el.addEventListener('click', assignHandler);
       });
       card.addEventListener('dragstart', e=>{
         e.dataTransfer.effectAllowed = 'move';
         e.dataTransfer.setData('type','episode');
         e.dataTransfer.setData('id', ep.id);
       });
-      // Allow topic tiles to be dropped onto this card
-      // Attach to card AND details to ensure drop works through <details>
-      const dropTargets = [card, card.querySelector('.ep-details')];
-      dropTargets.forEach(dt=>{
-        if(!dt) return;
-        dt.addEventListener('dragover', e=>{
-          e.preventDefault();
-          e.stopPropagation();
-          card.classList.add('dragover');
-        });
-        dt.addEventListener('drop', e=>{
-          e.preventDefault();
-          e.stopPropagation();
-          card.classList.remove('dragover');
-          const type = e.dataTransfer.getData('type');
-          const id   = e.dataTransfer.getData('id');
-          console.log('card drop:', {type, id, epId: ep.id});
-          if(type==='topic'){
-            db.collection('topics').doc(id).set({episodeId: ep.id}, {merge:true}).then(()=>{
-              renderTopicPool();
-              renderKanban();
-            }).catch(err => console.error('topic link error', err));
-          }
-        });
-      });
-      card.addEventListener('dragleave', ()=> card.classList.remove('dragover'));
       col.appendChild(card);
     });
     col.addEventListener('dragover', e=>{
@@ -1311,6 +1280,37 @@ function renderKanban(){
     });
     board.appendChild(col);
   });
+
+  // Delegated drag/drop on the board — handles topic drops on episode cards
+  // Uses event delegation so it works through <details>, <summary>, <a>, etc.
+  board.ondragover = function(e){
+    const card = e.target.closest('.episode-card');
+    if(card){
+      e.preventDefault();
+      card.classList.add('dragover');
+    }
+  };
+  board.ondragleave = function(e){
+    const card = e.target.closest('.episode-card');
+    if(card) card.classList.remove('dragover');
+  };
+  board.ondrop = function(e){
+    const card = e.target.closest('.episode-card');
+    if(!card) return;
+    e.preventDefault();
+    e.stopPropagation();
+    card.classList.remove('dragover');
+    const type = e.dataTransfer.getData('type');
+    const id   = e.dataTransfer.getData('id');
+    const epId = card.dataset.epId;
+    console.log('board drop:', {type, id, epId});
+    if(type==='topic' && epId){
+      db.collection('topics').doc(id).set({episodeId: epId}, {merge:true}).then(()=>{
+        renderTopicPool();
+        renderKanban();
+      }).catch(err => console.error('topic link error', err));
+    }
+  };
 }
 
 function renderTopicPool(){
