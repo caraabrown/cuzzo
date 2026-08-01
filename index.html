@@ -1355,6 +1355,12 @@ function renderTopicPool(){
       e.dataTransfer.effectAllowed = 'move';
       e.dataTransfer.setData('type','topic');
       e.dataTransfer.setData('id', t.id);
+      // Disable draggable on all episode cards so they accept drops
+      document.querySelectorAll('.episode-card').forEach(c=> c.draggable = false);
+    });
+    chip.addEventListener('dragend', ()=>{
+      // Re-enable draggable on all episode cards
+      document.querySelectorAll('.episode-card').forEach(c=> c.draggable = true);
     });
     // Click-to-assign fallback: select topic, then click an episode
     chip.addEventListener('click', ()=>{
