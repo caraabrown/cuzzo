@@ -1204,6 +1204,13 @@ function deleteEpisode(id){
     .forEach(t => db.collection('topics').doc(t.id).update({episodeId: null}));
 }
 
+function unassignTopic(topicId){
+  db.collection('topics').doc(topicId).set({episodeId: null}, {merge:true}).then(()=>{
+    renderTopicPool();
+    renderKanban();
+  }).catch(err => console.error('unassign error', err));
+}
+
 db.collection('episodes').orderBy('createdAt','desc').onSnapshot(snap=>{
   episodesCache = [];
   episodesFullCache = [];
@@ -1269,7 +1276,7 @@ function renderKanban(){
             ${ep.recordDate ? `<span class="tag">Recorded ${escapeHtml(ep.recordDate)}</span>` : ''}
             ${ep.date ? `<span class="tag">Planned ${escapeHtml(ep.date)}</span>` : ''}
           </div>
-          ${linkedTopics.length ? `<div class="ep-topics">${linkedTopics.map(t=>`<span class="tag sapphire">${escapeHtml(t.name)}</span>`).join('')}</div>` : ''}
+          ${linkedTopics.length ? `<div class="ep-topics">${linkedTopics.map(t=>`<span class="tag sapphire" style="cursor:pointer;" title="Click to unassign" onclick="event.stopPropagation();unassignTopic('${t.id}')">${escapeHtml(t.name)} &times;</span>`).join('')}</div>` : ''}
           <div class="ep-links item-meta" style="margin-top:8px;">
             ${ep.rawAudioLink ? `<a href="${escapeHtml(ep.rawAudioLink)}" target="_blank" rel="noopener noreferrer">Raw Audio</a>` : ''}
             ${ep.audioLink ? ` · <a href="${escapeHtml(ep.audioLink)}" target="_blank" rel="noopener noreferrer">Audio</a>` : ''}
@@ -1991,233 +1998,6 @@ db.collection('engagements').orderBy('date','desc').onSnapshot(snap=>{
     list.appendChild(el);
   });
 });
-</script>
-  <!-- ============================================================
-     KANBAN DRAG FIX
-     Paste this ENTIRE block into index.html on a new line
-     directly ABOVE the closing </body> tag (line 1960).
-     Do not change anything else in the file.
-     ============================================================ -->
-<style>
-  .episode-card{min-height:46px;}
-  .kanban-col{min-height:220px;}
-  .kanban-col.dragover{background:rgba(224,30,56,0.06);}
-  .episode-card.dragover{border-color:var(--ruby);box-shadow:inset 0 0 0 1px var(--ruby);}
-  .episode-card .ep-topics{margin-top:8px;}
-</style>
-<script>
-(function(){
-  var board = document.getElementById('episode-kanban');
-  if(!board) return;
-
-  // Drag state is tracked in plain variables instead of dataTransfer.
-  // dataTransfer.getData() is unreadable during dragover in every browser
-  // and unreliable with custom MIME types in Safari — that was the failure.
-  var dragKind = null;
-  var dragId   = null;
-
-  function elOf(target){
-    return (target && target.nodeType === 1) ? target : (target ? target.parentElement : null);
-  }
-
-  function clearHighlights(){
-    var i, els = board.querySelectorAll('.dragover');
-    for(i = 0; i < els.length; i++){ els[i].classList.remove('dragover'); }
-  }
-
-  function setHint(msg, isError){
-    var hint = document.getElementById('assign-hint');
-    if(!hint) return;
-    hint.textContent = msg || '';
-    hint.style.color = isError ? 'var(--ruby)' : 'var(--text-dim)';
-    hint.style.display = msg ? 'block' : 'none';
-  }
-
-  function assignTopic(topicId, epId){
-    if(!topicId || !epId) return;
-    db.collection('topics').doc(topicId).set({episodeId: epId}, {merge: true})
-      .then(function(){ setHint('', false); })
-      .catch(function(err){
-        console.error('topic assign failed', err);
-        setHint('Could not save — ' + (err && err.message ? err.message : 'write rejected'), true);
-      });
-  }
-
-  function setEpisodeStatus(epId, status){
-    if(!epId || !status) return;
-    db.collection('episodes').doc(epId).update({status: status})
-      .catch(function(err){
-        console.error('episode status failed', err);
-        setHint('Could not save — ' + (err && err.message ? err.message : 'write rejected'), true);
-      });
-  }
-
-  // ---- Board-level drop handling, registered ONCE ----
-  // The old code re-registered these on every render, stacking duplicate
-  // handlers, and only accepted topic drops on the card itself.
-  board.addEventListener('dragenter', function(e){ e.preventDefault(); });
-
-  board.addEventListener('dragover', function(e){
-    if(!dragKind) return;
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-    var t = elOf(e.target);
-    if(!t) return;
-    var card = t.closest('.episode-card');
-    var col  = t.closest('.kanban-col');
-    clearHighlights();
-    if(dragKind === 'topic'){
-      if(card) card.classList.add('dragover');
-      else if(col) col.classList.add('dragover');
-    } else if(col){
-      col.classList.add('dragover');
-    }
-  });
-
-  board.addEventListener('dragleave', function(e){
-    if(e.target === board) clearHighlights();
-  });
-
-  board.addEventListener('drop', function(e){
-    e.preventDefault();
-    e.stopPropagation();
-    clearHighlights();
-    var t = elOf(e.target);
-    var card = t ? t.closest('.episode-card') : null;
-    var col  = t ? t.closest('.kanban-col') : null;
-
-    if(dragKind === 'topic'){
-      if(card){
-        assignTopic(dragId, card.dataset.epId);
-      } else if(col){
-        // Dropped on empty column space: attach to the single card in that
-        // column if there is exactly one, otherwise say what to do.
-        var cards = col.querySelectorAll('.episode-card');
-        if(cards.length === 1){
-          assignTopic(dragId, cards[0].dataset.epId);
-        } else {
-          setHint('Drop the topic directly on an episode card.', true);
-        }
-      }
-    } else if(dragKind === 'episode' && col){
-      setEpisodeStatus(dragId, col.dataset.status);
-    }
-
-    dragKind = null;
-    dragId = null;
-  });
-
-  // ---- Replacement board renderer ----
-  renderKanban = function(){
-    board.innerHTML = '';
-    EP_STATUSES.forEach(function(s){
-      var col = document.createElement('div');
-      col.className = 'kanban-col';
-      col.dataset.status = s.key;
-      col.innerHTML = '<h4>' + s.label + '</h4>';
-
-      episodesCache.filter(function(ep){ return ep.status === s.key; }).forEach(function(ep){
-        var linkedTopics = topicsCache.filter(function(t){ return t.episodeId === ep.id; });
-        var card = document.createElement('div');
-        card.className = 'episode-card';
-        card.draggable = true;
-        card.dataset.epId = ep.id;
-
-        card.innerHTML =
-          '<button class="del-btn" onclick="event.stopPropagation();deleteEpisode(\'' + ep.id + '\')">&times;</button>' +
-          '<details class="ep-details">' +
-            '<summary class="ep-title">' + escapeHtml(ep.title) + '</summary>' +
-            '<div class="item-meta" style="margin-top:8px;">' +
-              (ep.publishDate ? '<span class="tag gold">Publishes ' + escapeHtml(ep.publishDate) + '</span>' : '') +
-              (ep.date ? '<span class="tag">' + escapeHtml(ep.date) + '</span>' : '') +
-            '</div>' +
-            (ep.notes ? '<div class="item-notes" style="margin-top:6px;font-size:12px;">' + escapeHtml(ep.notes) + '</div>' : '') +
-            '<div class="ep-links item-meta" style="margin-top:8px;">' +
-              (ep.audioLink ? '<a href="' + escapeHtml(ep.audioLink) + '" target="_blank" rel="noopener noreferrer">Audio</a>' : '') +
-              (ep.editLink ? ' &middot; <a href="' + escapeHtml(ep.editLink) + '" target="_blank" rel="noopener noreferrer">Edit</a>' : '') +
-              (ep.clipLink ? ' &middot; <a href="' + escapeHtml(ep.clipLink) + '" target="_blank" rel="noopener noreferrer">Clip</a>' : '') +
-            '</div>' +
-          '</details>' +
-          // Topic tags moved OUTSIDE <details> so an assigned topic is
-          // visible without expanding the card.
-          (linkedTopics.length
-            ? '<div class="ep-topics">' + linkedTopics.map(function(t){
-                return '<span class="tag sapphire">' + escapeHtml(t.name) + '</span>';
-              }).join('') + '</div>'
-            : '');
-
-        card.addEventListener('dragstart', function(e){
-          dragKind = 'episode';
-          dragId = ep.id;
-          e.dataTransfer.effectAllowed = 'move';
-          // Firefox refuses to start a drag unless setData is called.
-          e.dataTransfer.setData('text/plain', ep.id);
-        });
-        card.addEventListener('dragend', function(){
-          dragKind = null; dragId = null; clearHighlights();
-        });
-
-        // Click-to-assign (preserved from the original)
-        card.addEventListener('click', function(e){
-          if(!selectedTopicId) return;
-          e.preventDefault();
-          e.stopPropagation();
-          var tid = selectedTopicId;
-          selectedTopicId = null;
-          var sel = document.querySelectorAll('.topic-tile.selected');
-          for(var i = 0; i < sel.length; i++){ sel[i].classList.remove('selected'); }
-          setHint('', false);
-          assignTopic(tid, ep.id);
-        });
-
-        col.appendChild(card);
-      });
-
-      board.appendChild(col);
-    });
-
-    // The topics snapshot never re-rendered the pool, so the pool and the
-    // board could disagree. Rendering it here keeps them in lockstep.
-    renderTopicPool();
-  };
-
-  // ---- Replacement pool renderer ----
-  renderTopicPool = function(){
-    var pool = document.getElementById('topic-pool');
-    if(!pool) return;
-    var unassigned = topicsCache.filter(function(t){ return !t.episodeId; });
-    pool.innerHTML = unassigned.length ? '' : '<span class="empty-state" style="padding:6px 0">All topics are assigned.</span>';
-
-    unassigned.forEach(function(t){
-      var chip = document.createElement('div');
-      chip.className = 'topic-tile' + (selectedTopicId === t.id ? ' selected' : '');
-      chip.draggable = true;
-      chip.textContent = t.name;
-      chip.title = 'Drag onto an episode card, or click to assign';
-      chip.style.cursor = 'pointer';
-
-      chip.addEventListener('dragstart', function(e){
-        dragKind = 'topic';
-        dragId = t.id;
-        e.dataTransfer.effectAllowed = 'move';
-        e.dataTransfer.setData('text/plain', t.id);
-      });
-      chip.addEventListener('dragend', function(){
-        dragKind = null; dragId = null; clearHighlights();
-      });
-
-      chip.addEventListener('click', function(){
-        var sel = document.querySelectorAll('.topic-tile.selected');
-        for(var i = 0; i < sel.length; i++){ sel[i].classList.remove('selected'); }
-        chip.classList.add('selected');
-        selectedTopicId = t.id;
-        setHint('Selected "' + t.name + '" — click an episode card to assign it.', false);
-      });
-
-      pool.appendChild(chip);
-    });
-  };
-})();
 </script>
 </body>
 </html>
