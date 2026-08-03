@@ -631,6 +631,16 @@
       <input type="url" id="ep-clip" placeholder="https://...">
       <label>Publish date</label>
       <input type="date" id="ep-publish-date">
+      <label>One-line hook</label>
+      <input type="text" id="ep-hook" placeholder="What's this episode about in one line?">
+      <label>Record date</label>
+      <input type="date" id="ep-record-date">
+      <label>Raw audio link</label>
+      <input type="url" id="ep-raw-audio" placeholder="https://...">
+      <label>Transcript link</label>
+      <input type="url" id="ep-transcript" placeholder="https://...">
+      <label>Artwork folder link</label>
+      <input type="url" id="ep-artwork" placeholder="https://...">
       <button class="primary" onclick="addEpisode()">Add Episode</button>
     </div>
 
@@ -1148,6 +1158,11 @@ function addEpisode(){
   const editLink  = document.getElementById('ep-edit').value.trim();
   const clipLink  = document.getElementById('ep-clip').value.trim();
   const publishDate = document.getElementById('ep-publish-date').value;
+  const hook       = document.getElementById('ep-hook').value.trim();
+  const recordDate = document.getElementById('ep-record-date').value;
+  const rawAudioLink = document.getElementById('ep-raw-audio').value.trim();
+  const transcriptLink = document.getElementById('ep-transcript').value.trim();
+  const artworkLink = document.getElementById('ep-artwork').value.trim();
 
   db.collection('episodes').add({
     title,
@@ -1158,6 +1173,11 @@ function addEpisode(){
     editLink,
     clipLink,
     publishDate,
+    hook,
+    recordDate,
+    rawAudioLink,
+    transcriptLink,
+    artworkLink,
     createdAt: Date.now()
   }).catch(err => console.error('addEpisode error', err));
 
@@ -1168,6 +1188,11 @@ function addEpisode(){
   document.getElementById('ep-edit').value = '';
   document.getElementById('ep-clip').value = '';
   document.getElementById('ep-publish-date').value = '';
+  document.getElementById('ep-hook').value = '';
+  document.getElementById('ep-record-date').value = '';
+  document.getElementById('ep-raw-audio').value = '';
+  document.getElementById('ep-transcript').value = '';
+  document.getElementById('ep-artwork').value = '';
   document.getElementById('episode-form').style.display = 'none';
 }
 
@@ -1194,6 +1219,11 @@ db.collection('episodes').orderBy('createdAt','desc').onSnapshot(snap=>{
       editLink: d.editLink || '',
       clipLink: d.clipLink || '',
       publishDate: d.publishDate || '',
+      hook: d.hook || '',
+      recordDate: d.recordDate || '',
+      rawAudioLink: d.rawAudioLink || '',
+      transcriptLink: d.transcriptLink || '',
+      artworkLink: d.artworkLink || '',
       createdAt: d.createdAt || 0
     });
     episodesFullCache.push({id: doc.id, ...d});
@@ -1233,17 +1263,22 @@ function renderKanban(){
         <button class="del-btn" onclick="event.stopPropagation();deleteEpisode('${ep.id}')">&times;</button>
         <details class="ep-details">
           <summary class="ep-title">${escapeHtml(ep.title)}</summary>
+          ${ep.hook ? `<div class="item-meta" style="margin-top:6px;font-size:12px;font-style:italic;color:var(--text-dim);">${escapeHtml(ep.hook)}</div>` : ''}
           <div class="item-meta" style="margin-top:8px;">
             ${ep.publishDate ? `<span class="tag gold">Publishes ${escapeHtml(ep.publishDate)}</span>` : ''}
-            ${ep.date ? `<span class="tag">${escapeHtml(ep.date)}</span>` : ''}
+            ${ep.recordDate ? `<span class="tag">Recorded ${escapeHtml(ep.recordDate)}</span>` : ''}
+            ${ep.date ? `<span class="tag">Planned ${escapeHtml(ep.date)}</span>` : ''}
           </div>
           ${linkedTopics.length ? `<div class="ep-topics">${linkedTopics.map(t=>`<span class="tag sapphire">${escapeHtml(t.name)}</span>`).join('')}</div>` : ''}
-          ${ep.notes ? `<div class="item-notes" style="margin-top:6px;font-size:12px;">${escapeHtml(ep.notes)}</div>` : ''}
           <div class="ep-links item-meta" style="margin-top:8px;">
-            ${ep.audioLink ? `<a href="${escapeHtml(ep.audioLink)}" target="_blank" rel="noopener noreferrer">Audio</a>` : ''}
+            ${ep.rawAudioLink ? `<a href="${escapeHtml(ep.rawAudioLink)}" target="_blank" rel="noopener noreferrer">Raw Audio</a>` : ''}
+            ${ep.audioLink ? ` · <a href="${escapeHtml(ep.audioLink)}" target="_blank" rel="noopener noreferrer">Audio</a>` : ''}
             ${ep.editLink ? ` · <a href="${escapeHtml(ep.editLink)}" target="_blank" rel="noopener noreferrer">Edit</a>` : ''}
             ${ep.clipLink ? ` · <a href="${escapeHtml(ep.clipLink)}" target="_blank" rel="noopener noreferrer">Clip</a>` : ''}
+            ${ep.transcriptLink ? ` · <a href="${escapeHtml(ep.transcriptLink)}" target="_blank" rel="noopener noreferrer">Transcript</a>` : ''}
+            ${ep.artworkLink ? ` · <a href="${escapeHtml(ep.artworkLink)}" target="_blank" rel="noopener noreferrer">Artwork</a>` : ''}
           </div>
+          ${ep.notes ? `<div class="item-notes" style="margin-top:6px;font-size:12px;border-top:1px solid var(--border);padding-top:6px;">${escapeHtml(ep.notes)}</div>` : ''}
         </details>
       `;
       card.dataset.epId = ep.id;
